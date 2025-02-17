@@ -5,8 +5,8 @@ build/
 !**/src/test/**/build/
 
 ### SECRET !!!!! ###
-secret.properties
-test/resources/secrets.properties
+secrets.properties
+src/test/resources/secrets.properties
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
