@@ -56,7 +56,7 @@ testContextManager.withSession(session) {
         addMessage(message1)
         val message2 = ask("古关优是谁？")
         println(message2.content)
-        addMessage(message4)
+        addMessage(message2)
     }
 }
 ```
