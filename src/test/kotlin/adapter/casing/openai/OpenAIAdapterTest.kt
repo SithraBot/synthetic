@@ -7,8 +7,8 @@ import kotlin.test.Test
 internal object OpenAIAdapterTest {
     val testAIAdapter = OpenAIAdapter {
         val timeout = 180_000L
-        baseUrl = Url("https://api.deepseek.com")
-        token = Props.getDeepSeekKey()
+        baseUrl = Url("https://dashscope.aliyuncs.com/compatible-mode/v1")
+        token = Props.getAliyunKey()
         requestTimeout = timeout
         connectTimeout = timeout
         socketTimeout = timeout

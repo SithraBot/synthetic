@@ -43,6 +43,7 @@ class EmbeddedService(
             setBody(json.encodeToString(Request.fromEmbeddedRequest(body)))
         }
         val bodyString: String = response.body()
+        if (response.status.value >= 400) throw Exception(bodyString)
         val responseData = json.decodeFromString<Response>(bodyString)
         return IEmbeddedService.EmbeddedResponse(responseData.data[0].embedding.toFloatArray())
     }

@@ -5,10 +5,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal object MessageTest {
+    private val json = Json { encodeDefaults = true }
+
     @Test
     fun serialize() {
         val message = Message(role = Message.Role.USER, content = "world")
-        assertEquals(Json.encodeToString(message), "{\"role\":\"user\",\"content\":\"world\"}")
+        assertEquals(
+            json.decodeFromString(json.encodeToString(message)),
+            json.decodeFromString<Message>("{\"role\":\"user\",\"content\":\"world\"}")
+        )
     }
 
     @Test

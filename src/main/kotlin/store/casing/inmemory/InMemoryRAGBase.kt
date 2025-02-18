@@ -1,15 +1,40 @@
 package store.casing.inmemory
 
+import kotlinx.serialization.Serializable
 import store.IRAGBase
-import store.IRAGBase.Document
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.uuid.Uuid
 import kotlinx.serialization.json.Json
+import store.IDocument
 
 class InMemoryRAGBase(
     private val documents: MutableMap<Uuid, Document> = mutableMapOf()
-) : IRAGBase {
+) : IRAGBase<InMemoryRAGBase.Document> {
+    @Serializable
+    data class Document(
+        override val id: Uuid, override val document: String, val title: String, val vector: FloatArray
+    ) : IDocument {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Document) return false
+
+            if (id != other.id) return false
+            if (document != other.document) return false
+            if (title != other.title) return false
+            if (!vector.contentEquals(other.vector)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = id.hashCode()
+            result = 31 * result + document.hashCode()
+            result = 31 * result + title.hashCode()
+            result = 31 * result + vector.contentHashCode()
+            return result
+        }
+    }
 
     companion object {
         operator fun invoke(jsonString: String, json: Json = Json) =

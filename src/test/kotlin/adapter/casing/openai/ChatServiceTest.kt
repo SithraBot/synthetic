@@ -13,7 +13,7 @@ internal object ChatServiceTest {
     fun chat() {
         val response = runBlocking {
             testChatService.chat {
-                model = "deepseek-chat"
+                model = "deepseek-r1-distill-qwen-1.5b"
                 messages = listOf(Message(role = Message.Role.USER, content = "hello"))
             }
         }
@@ -25,7 +25,7 @@ internal object ChatServiceTest {
     @Test
     fun chatStream() = runBlocking {
         testChatService.chatStream({
-            model { "deepseek-chat" }
+            model { "deepseek-r1-distill-qwen-1.5b" }
             messages { listOf(Message(role = Message.Role.USER, content = "hello")) }
         }) { content, done ->
             if (done) {

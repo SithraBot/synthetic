@@ -5,9 +5,9 @@ import context.Message
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
-import io.ktor.utils.io.core.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.Serializable
 
@@ -54,6 +54,7 @@ class ChatService(
             setBody(json.encodeToString(Request.fromChatRequest(body)))
         }
         val bodyString: String = response.body()
+        if (response.status.value >= 400) throw Exception(bodyString)
         val responseData = json.decodeFromString<Response>(bodyString)
         return IChatService.ChatResponse(responseData.choices[0].message)
     }
@@ -77,6 +78,7 @@ class ChatService(
             setBody(json.encodeToString(Request.fromChatRequest(body).stream()))
         }.execute { response ->
             val channel: ByteReadChannel = response.body()
+            if (response.status.value >= 400) throw Exception(response.bodyAsText())
             while (!channel.isClosedForRead) {
                 val line = channel.readUTF8Line()
                 if (line != null && line.startsWith("data:")) {

@@ -2,16 +2,17 @@ package context
 
 import adapter.IChatService
 import adapter.IEmbeddedService
+import store.IDocument
 import store.IMessagesStore
 import store.IRAGBase
 import store.ISession
 import kotlin.uuid.Uuid
 
-interface IContext {
+interface IContext<Doc : IDocument> {
     val chatService: IChatService
     val embeddedService: IEmbeddedService
     val messagesStore: IMessagesStore
-    val ragBase: IRAGBase?
+    val ragBase: IRAGBase<Doc>?
 
     fun createSession(chatModel: String, embedModel: String): Uuid {
         return messagesStore.createSession(chatModel, embedModel)
@@ -36,9 +37,11 @@ interface IContext {
         }) { content, done -> block(content, done) }
     }
 
-    class ContextWithSession(val session: ISession, val context: IContext) : IContext by context, ISession by session
+    class ContextWithSession<Doc : IDocument>(val session: ISession, val context: IContext<Doc>) :
+        IContext<Doc> by context,
+        ISession by session
 
-    suspend fun withSession(sessionId: Uuid, callback: suspend ContextWithSession.() -> Unit) {
+    suspend fun withSession(sessionId: Uuid, callback: suspend ContextWithSession<Doc>.() -> Unit) {
         val session = messagesStore.getMessagesBySessionId(sessionId) ?: return
         val context = ContextWithSession(session, this)
         context.callback()

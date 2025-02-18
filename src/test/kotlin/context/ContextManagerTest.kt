@@ -15,7 +15,7 @@ object ContextManagerTest {
 
     @Test
     fun testChat() = runBlocking {
-        val session = testContextManager.createSession("deepseek-chat", "text-embedding-v3")
+        val session = testContextManager.createSession("deepseek-r1-distill-qwen-1.5b", "text-embedding-v3")
         testContextManager.withSession(session) {
             val message = chat(Message("hello"))
             println(message.content)
