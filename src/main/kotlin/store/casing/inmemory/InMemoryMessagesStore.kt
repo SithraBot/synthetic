@@ -1,10 +1,9 @@
 package store.casing.inmemory
 
-import context.Message
 import store.IMessagesStore
 import kotlin.uuid.Uuid
 
-class MessagesStoreInMemory : IMessagesStore {
+class InMemoryMessagesStore : IMessagesStore {
     private val sessions = mutableMapOf<Uuid, IMessagesStore.MessagesSession>()
 
     override fun createSession(chatModel: String, embedModel: String): Uuid {

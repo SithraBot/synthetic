@@ -1,17 +1,19 @@
 package store
 
+import context.ContextManager
+import context.IContext
 import context.Message
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface IMessagesStore {
     class MessagesSession(
-        val sessionId: Uuid,
-        val chatModel: String,
-        val embedModel: String,
-        val messages: MutableList<Message> = mutableListOf()
-    ) {
-        fun addMessage(message: Message) = messages.add(message)
+        override val sessionId: Uuid,
+        override val chatModel: String,
+        override val embedModel: String,
+        override val messages: MutableList<Message> = mutableListOf()
+    ) : ISession {
+        override fun addMessage(message: Message) = messages.add(message)
     }
 
     fun getAllSessions(): List<Uuid>

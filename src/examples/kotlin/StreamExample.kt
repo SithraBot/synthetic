@@ -5,7 +5,7 @@ import context.ContextManager
 import context.Message
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import store.casing.inmemory.MessagesStoreInMemory
+import store.casing.inmemory.InMemoryMessagesStore
 
 @Suppress("unused")
 object StreamExample {
@@ -18,10 +18,10 @@ object StreamExample {
         }
         val contextManager = ContextManager {
             apiAdapter = adapter
-            messagesStore = MessagesStoreInMemory()
+            messagesStore = InMemoryMessagesStore()
         }
         val session = contextManager.createSession("...", "...")
-        contextManager.withSessionId(session) {
+        contextManager.withSession(session) {
             chatStream(Message("why hello world?")) { content, done ->
                 var message = ""
                 if (done) {

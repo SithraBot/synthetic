@@ -1,15 +1,27 @@
 package context
 
 import adapter.IAdapter
+import adapter.IChatService
+import adapter.IEmbeddedService
 import store.IMessagesStore
+import store.IRAGBase
 
-class Context(apiAdapter: IAdapter, val messagesStore: IMessagesStore) {
-    class ContextBuilder(var apiAdapter: IAdapter? = null, var messagesStore: IMessagesStore? = null) {
+open class Context(
+    apiAdapter: IAdapter,
+    override val messagesStore: IMessagesStore,
+    override val ragBase: IRAGBase?
+) : IContext {
+    override val chatService: IChatService = apiAdapter.getChatService()
+    override val embeddedService: IEmbeddedService = apiAdapter.getEmbeddedService()
+
+    class ContextBuilder(
+        var apiAdapter: IAdapter? = null,
+        var messagesStore: IMessagesStore? = null,
+        var ragBase: IRAGBase? = null
+    ) {
         fun setApiAdapter(apiAdapter: IAdapter) = apply { this.apiAdapter = apiAdapter }
         fun setMessagesStore(messagesStore: IMessagesStore) = apply { this.messagesStore = messagesStore }
-        fun build() = Context(apiAdapter!!, messagesStore!!)
+        fun setRAGBase(ragBase: IRAGBase) = apply { this.ragBase = ragBase }
+        fun build() = Context(apiAdapter!!, messagesStore!!, ragBase)
     }
-
-    val chatService = apiAdapter.getChatService()
-    val embeddedService = apiAdapter.getEmbeddedService()
 }

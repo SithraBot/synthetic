@@ -1,15 +1,23 @@
 package store.casing.inmemory
 
 import store.IRAGBase
+import store.IRAGBase.Document
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.uuid.Uuid
+import kotlinx.serialization.json.Json
 
-class RAGBaseInMemory : IRAGBase {
-    val titles = mutableMapOf<Uuid, String>()
-    val documents = mutableMapOf<Uuid, String>()
-    val vectors = mutableMapOf<Uuid, FloatArray>()
-    fun cosineSimilarity(v1: FloatArray, v2: FloatArray): Float {
+class InMemoryRAGBase(
+    private val documents: MutableMap<Uuid, Document> = mutableMapOf()
+) : IRAGBase {
+
+    companion object {
+        operator fun invoke(jsonString: String, json: Json = Json) =
+            InMemoryRAGBase(json.decodeFromString<List<Document>>(jsonString).associateBy { it.id }
+                .toMutableMap())
+    }
+
+    private fun cosineSimilarity(v1: FloatArray, v2: FloatArray): Float {
         require(v1.size == v2.size) { "Vectors must have the same length" }
         var dotProduct = 0f
         var norm1 = 0f
@@ -24,23 +32,16 @@ class RAGBaseInMemory : IRAGBase {
 
     override fun search(queryVector: FloatArray, limit: Int): List<Uuid> {
         return documents.map { (id, document) ->
-            val vector = vectors[id] ?: FloatArray(queryVector.size) { 0f }
-            val similarity = cosineSimilarity(queryVector, vector)
+            val similarity = cosineSimilarity(queryVector, document.vector)
             id to similarity
         }.sortedByDescending { (_, similarity) -> similarity }.take(limit).map { (id, _) -> id }
     }
 
-    override fun getDocument(id: Uuid): String {
-        return documents[id] ?: "Not found"
+    override fun getDocument(id: Uuid): Document? {
+        return documents[id]
     }
 
-    override fun addDocument(id: Uuid, document: String, title: String, vector: FloatArray) {
+    override fun addDocument(id: Uuid, document: Document) {
         documents[id] = document
-        titles[id] = title
-        vectors[id] = vector
-    }
-
-    override fun getDocumentTitle(id: Uuid): String {
-        return titles[id] ?: "Not found"
     }
 }
