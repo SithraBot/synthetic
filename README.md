@@ -1,6 +1,15 @@
 # Synthetis
 
-Synthetis is a kotlin framework for building AI chat applications. Support RAG.
+**Synthetis** is a lightweight Kotlin library for building LLM-driven applications, specializing in RAG (Retrieval-Augmented Generation) pipelines. Designed for API flexibility, it implements an **adapter-first architecture** to seamlessly integrate any AI provider (OpenAI, HuggingFace, custom endpoints) and data storage system.
+
+Core features:
+- Modular RAG components: Document processors, embedding interfaces, and retriever/reranker blueprints
+- Agnostic data layer: Abstracted connectors for vector DBs, SQL/NoSQL, or file systems via unified interfaces
+- API-neutral LLM operations: Swap models/endpoints without rewriting chains/agents
+- Coroutine-native pipelines for async workflows
+- Minimal abstraction overhead with clear extension points
+
+Optimized for Kotlin developers prioritizing API interoperability and custom data flows over framework rigidity.
 
 ## Usage
 
@@ -58,5 +67,15 @@ testContextManager.withSession(session) {
         println(message2.content)
         addMessage(message2)
     }
+}
+
+fun ragTemplate(question: String, docs: List<IDocument>): String {
+    val docsString = docs.joinToString { "${it.document};;" }
+    return """
+            Please answer the question according to the docs.
+            question: $question
+            docs: $docsString
+            answer:
+        """.trimIndent()
 }
 ```
