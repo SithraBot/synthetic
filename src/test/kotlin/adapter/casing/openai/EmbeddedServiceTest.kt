@@ -7,12 +7,12 @@ import kotlin.test.Test
 
 
 internal object EmbeddedServiceTest {
-    private val testEmbeddedService = HybridTest.testHybrid.getEmbeddedService()
+    val testEmbeddedService = HybridTest.testHybrid.getEmbeddedService()
 
     @Test
-    fun getEmbeddedService() {
+    fun embed() {
         val response = runBlocking {
-            testEmbeddedService.embed("text-embedding-v3", "hello")
+            testEmbeddedService.embed("text-embedding-v3", "Where does ‘Hello World’ come from?")
         }
         assert(response.embedding.isNotEmpty())
     }

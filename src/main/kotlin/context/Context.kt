@@ -7,22 +7,19 @@ import store.IDocument
 import store.IMessagesStore
 import store.IRAGBase
 
-open class Context<Doc : IDocument>(
+open class Context(
     apiAdapter: IAdapter,
     override val messagesStore: IMessagesStore,
-    override val ragBase: IRAGBase<Doc>?
-) : IContext<Doc> {
+) : IContext {
     override val chatService: IChatService = apiAdapter.getChatService()
     override val embeddedService: IEmbeddedService = apiAdapter.getEmbeddedService()
 
     class ContextBuilder(
         var apiAdapter: IAdapter? = null,
         var messagesStore: IMessagesStore? = null,
-        var ragBase: IRAGBase<*>? = null
     ) {
         fun setApiAdapter(apiAdapter: IAdapter) = apply { this.apiAdapter = apiAdapter }
         fun setMessagesStore(messagesStore: IMessagesStore) = apply { this.messagesStore = messagesStore }
-        fun setRAGBase(ragBase: IRAGBase<*>) = apply { this.ragBase = ragBase }
-        fun build() = Context(apiAdapter!!, messagesStore!!, ragBase)
+        fun build() = Context(apiAdapter!!, messagesStore!!)
     }
 }
