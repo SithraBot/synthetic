@@ -18,14 +18,14 @@ fun main() = runBlocking {
     }
     val session = contextManager.createSession("...", "...")
     // common
-    contextManager.withSessionId(session) {
+    contextManager.withSession(session) {
         val message = chat(Message("why hello world?"))
         println(message.content)
         addMessage(message)
     }
     
     // streaming
-    contextManager.withSessionId(session) {
+    contextManager.withSession(session) {
         chatStream(Message("why hello world?")) { content, done ->
             var message = ""
             if (done) {
