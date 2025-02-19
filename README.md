@@ -1,8 +1,13 @@
 <h1 align="center">Synthetis</h1>
 
-**Synthetis** is a lightweight Kotlin library for building LLM-driven applications, specializing in RAG (Retrieval-Augmented Generation) pipelines. Designed for API flexibility, it implements an **adapter-first architecture** to seamlessly integrate any AI provider (OpenAI, HuggingFace, custom endpoints) and data storage system.
+<p align="center"><img src="https://github.com/SithraBot/synthetis/blob/dev/icon.svg" alt="Synthetis"/></p>
+
+**Synthetis** is a lightweight Kotlin library for building LLM-driven applications, specializing in RAG (
+Retrieval-Augmented Generation) pipelines. Designed for API flexibility, it implements an **adapter-first architecture**
+to seamlessly integrate any AI provider (OpenAI, HuggingFace, custom endpoints) and data storage system.
 
 Core features:
+
 - Modular RAG components: Document processors, embedding interfaces, and retriever/reranker blueprints
 - Agnostic data layer: Abstracted connectors for vector DBs, SQL/NoSQL, or file systems via unified interfaces
 - API-neutral LLM operations: Swap models/endpoints without rewriting chains/agents
@@ -34,7 +39,7 @@ fun main() = runBlocking {
         println(message.content)
         addMessage(message)
     }
-    
+
     // streaming
     contextManager.withSession(session) {
         val response = chatStream(Message("why hello world?"))
