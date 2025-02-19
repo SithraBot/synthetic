@@ -1,9 +1,6 @@
 package store
 
-import context.ContextManager
-import context.IContext
 import context.Message
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface IMessagesStore {

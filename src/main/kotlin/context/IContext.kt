@@ -2,6 +2,7 @@ package context
 
 import adapter.IChatService
 import adapter.IEmbeddedService
+import kotlinx.coroutines.flow.Flow
 import store.IDocument
 import store.IMessagesStore
 import store.IRAGBase
@@ -27,13 +28,13 @@ interface IContext {
         return response.message
     }
 
-    suspend fun ISession.chatStream(message: Message, block: suspend (content: String?, done: Boolean) -> Unit) {
+    fun ISession.chatStream(message: Message): Flow<String> {
         addMessage(message)
         val chatMessages = messages
-        chatService.chatStream({
+        return chatService.chatStream({
             model = chatModel
             messages = chatMessages
-        }) { content, done -> block(content, done) }
+        })
     }
 
     class ContextWithSession(val session: ISession, val context: IContext) :

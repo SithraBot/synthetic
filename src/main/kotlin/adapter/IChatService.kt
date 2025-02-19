@@ -1,6 +1,7 @@
 package adapter
 
 import context.Message
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 
 interface IChatService {
@@ -112,14 +113,13 @@ interface IChatService {
     }
 
 
-    suspend fun chatStream(body: ChatRequest, block: suspend (content: String?, done: Boolean) -> Unit)
+    fun chatStream(body: ChatRequest): Flow<String>
 
-    suspend fun chatStream(
+    fun chatStream(
         bodyBuilder: ChatRequestBuilder.() -> Unit,
-        block: suspend (content: String?, done: Boolean) -> Unit
-    ) {
+    ): Flow<String> {
         val builder = ChatRequestBuilder(emptyList(), null)
         builder.bodyBuilder()
-        chatStream(builder.build(), block)
+        return chatStream(builder.build())
     }
 }

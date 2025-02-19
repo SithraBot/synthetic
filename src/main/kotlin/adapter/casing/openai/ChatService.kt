@@ -8,6 +8,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.onFailure
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.*
 import kotlinx.serialization.Serializable
 
@@ -68,10 +72,9 @@ class ChatService(
     @Serializable
     data class StreamResponse(val choices: List<StreamChoice>)
 
-    override suspend fun chatStream(
+    override fun chatStream(
         body: IChatService.ChatRequest,
-        block: suspend (content: String?, done: Boolean) -> Unit
-    ) {
+    ): Flow<String> = callbackFlow {
         client.preparePost(chatUrl) {
             contentType(ContentType.Application.Json)
             bearerAuth(config.token)
@@ -84,11 +87,11 @@ class ChatService(
                 if (line != null && line.startsWith("data:")) {
                     val data = line.removePrefix("data:").trim()
                     if (data == "[DONE]") {
-                        block(null, true)
+                        close()
                     } else {
                         val streamResponse = json.decodeFromString<StreamResponse>(data)
                         val message = streamResponse.choices[0].delta.content
-                        block(message, false)
+                        if (message.isNotEmpty()) trySend(message).onFailure { e -> cancel("Error sending message", e) }
                     }
                 }
             }

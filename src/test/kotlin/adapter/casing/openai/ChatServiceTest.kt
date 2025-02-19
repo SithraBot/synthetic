@@ -1,7 +1,5 @@
 package adapter.casing.openai
 
-import adapter.IChatService
-import adapter.casing.HybridTest
 import context.Message
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -24,16 +22,14 @@ internal object ChatServiceTest {
 
     @Test
     fun chatStream() = runBlocking {
-        testChatService.chatStream({
+        val response = testChatService.chatStream({
             model { "deepseek-r1-distill-qwen-1.5b" }
             messages { listOf(Message(role = Message.Role.USER, content = "hello")) }
-        }) { content, done ->
-            if (done) {
-                println()
-            } else {
-                print(content)
-            }
+        })
+        response.collect {
+            print("$it;;")
         }
+        println()
     }
 
 }
