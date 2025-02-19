@@ -37,16 +37,11 @@ fun main() = runBlocking {
     
     // streaming
     contextManager.withSession(session) {
-        chatStream(Message("why hello world?")) { content, done ->
-            var message = ""
-            if (done) {
-                addMessage(Message(message, Message.Role.ASSISTANT))
-                println()
-            } else {
-                message += content
-                print(content)
-            }
+        val response = chatStream(Message("why hello world?"))
+        response.collect {
+            print(it)
         }
+        println()
     }
 }
 ```

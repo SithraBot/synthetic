@@ -27,7 +27,7 @@ internal object ChatServiceTest {
             messages { listOf(Message(role = Message.Role.USER, content = "hello")) }
         })
         response.collect {
-            print("$it;;")
+            print(it)
         }
         println()
     }
