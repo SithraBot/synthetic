@@ -1,4 +1,4 @@
-<h1 align="center"><img src="https://github.com/SithraBot/synthetis/blob/dev/icon.svg" alt="Synthetis" height="40px"/> Synthetis</h1>
+<h1 align="center"><img src="https://github.com/SithraBot/synthetis/blob/dev/icon.svg" alt="Synthetis" height="32px"/> Synthetis</h1>
 
 **Synthetis** is a lightweight Kotlin library for building LLM-driven applications, specializing in RAG (
 Retrieval-Augmented Generation) pipelines. Designed for API flexibility, it implements an **adapter-first architecture**
