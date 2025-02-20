@@ -1,6 +1,6 @@
-# Synthetis
+<h1 align="center"><img src="https://github.com/SithraBot/synthetis/blob/dev/icon_text.svg" alt="Synthetis" height="64px"/></h1>
 
-Synthetis 是一个轻量级 Kotlin 库，专为构建 LLM 驱动型应用设计，核心支持 RAG（检索增强生成）管道和智能体（Agent）系统。采用适配器优先架构，可无缝集成任意 AI 服务提供商（OpenAI、HuggingFace、自定义端点）和数据存储系统。
+**Synthetis** 是一个轻量级 Kotlin/JVM 库，专为构建 LLM 驱动型应用设计，核心支持 RAG（检索增强生成）管道和智能体（Agent）系统。采用适配器优先架构，可无缝集成任意 AI 服务提供商（OpenAI、HuggingFace、自定义端点）和数据存储系统。
 
 **核心特性：**
 
@@ -11,7 +11,7 @@ Synthetis 是一个轻量级 Kotlin 库，专为构建 LLM 驱动型应用设计
 - **协程优先的管道**：原生支持 RAG 和 Agent 的异步工作流
 - **最小抽象开销**：提供清晰的扩展点用于定制 Agent 逻辑和数据处理器
 
-专为重视 API 互操作性和自定义数据流，而非框架约束的 Kotlin 开发者优化。
+专为重视 API 互操作性和自定义数据流，而非框架约束的 Kotlin/JVM 开发者优化。
 
 ## 例子
 
