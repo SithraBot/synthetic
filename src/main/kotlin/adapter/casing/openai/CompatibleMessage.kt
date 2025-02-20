@@ -6,14 +6,14 @@ import kotlinx.serialization.SerialName
 import store.Message
 import store.ToolMessage
 import store.ToolResultMessage
-import tools.toolcall.IToolCall
+import tools.casing.toolcall.OpenAIFunctionCall
 
 @Serializable
 data class CompatibleMessage(
     val role: IMessage.Role,
     val content: String,
     @SerialName("tool_calls")
-    val toolCalls: List<IToolCall>?,
+    val toolCalls: List<OpenAIFunctionCall>?,
     @SerialName("tool_call_id")
     val toolCallId: String?
 ) {
@@ -28,7 +28,7 @@ data class CompatibleMessage(
             is ToolMessage<*> -> CompatibleMessage(
                 IMessage.Role.ASSISTANT,
                 "",
-                message.toolCalls,
+                message.toolCalls.filterIsInstance<OpenAIFunctionCall>(),
                 null
             )
 
