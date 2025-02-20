@@ -2,11 +2,18 @@ package context
 
 import adapter.casing.HybridTest
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
 import store.casing.inmemory.InMemoryRAGBaseTest
 import store.casing.inmemory.InMemoryMessagesStoreTest
 import kotlin.test.Test
-import context.*;
-import store.IDocument
+import rag.IDocument
+import rag.search
+import store.Message
+import tools.Functions
+import tools.casing.OpenAIFunctionTools
+import tools.casing.OpenAIFunctionToolsTest
+import tools.chatWithTools
+import tools.schema.Description
 
 object ContextManagerTest {
     val testRAGBase = InMemoryRAGBaseTest.testRagBase
@@ -18,7 +25,7 @@ object ContextManagerTest {
 
     @Test
     fun testChat() = runBlocking {
-        val session = testContextManager.createSession("qwen-turbo", "text-embedding-v3")
+        val session = testContextManager.createSession("qwen-turbo")
         testContextManager.withSession(session) {
             val message = chat(Message("hello"))
             println(message.content)
@@ -36,6 +43,43 @@ object ContextManagerTest {
                 val message4 = ask("古关优是谁？")
                 println(message4.content)
                 addMessage(message4)
+            }
+        }
+    }
+
+    @Test
+    fun testTools() = runBlocking {
+        val session = testContextManager.createSession("qwen-turbo")
+        testContextManager.withSession(session) {
+            withTools(OpenAIFunctionToolsTest.testOpenAIFunctionTools) {
+                val message = chatWithTools(Message("134 + 983 等于几？"))
+                println(message.content)
+                addMessage(message)
+            }
+        }
+    }
+
+    @Test
+    fun testRAGAndTools() = runBlocking {
+        val tools = OpenAIFunctionTools(Functions())
+        val session = testContextManager.createSession("qwen-turbo")
+        testContextManager.withSession(session) {
+            withRAGBase(testRAGBase) {
+                @Serializable
+                class SearchInput(@Description("keywords") val keywords: String)
+
+                tools.functions.register("searchDocuments", "search documents about any by keywords") { input: SearchInput ->
+                    println("\n-- search ${input.keywords} -- \n")
+                    runBlocking {
+                        search(input.keywords, 1).joinToString(";;") { it.document }
+                    }
+                }
+
+                withTools(tools) {
+                    val message = chatWithTools(Message("古关优是谁？"))
+                    println(message.content)
+                    addMessage(message)
+                }
             }
         }
     }

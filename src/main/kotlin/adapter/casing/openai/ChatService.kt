@@ -1,7 +1,7 @@
 package adapter.casing.openai
 
 import adapter.IChatService
-import context.Message
+import store.Message
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.*
 import kotlinx.serialization.Serializable
+import store.IMessage
+import tools.ITools
+import tools.toolcall.IToolCall
 
 @Suppress("unused")
 class ChatService(
@@ -25,33 +28,37 @@ class ChatService(
     @Serializable
     data class Request(
         val model: String,
-        val messages: List<Message>,
+        val messages: List<CompatibleMessage>,
         val temperature: Double,
-        var stream: Boolean = false
+        var stream: Boolean = false,
+        var tools: JsonElement? = null
     ) {
         companion object {
             @JvmStatic
             fun fromChatRequest(chatRequest: IChatService.ChatRequest): Request {
-                return Request(chatRequest.model ?: "gpt-3.5-turbo", chatRequest.messages, chatRequest.temperature)
+                return Request(
+                    chatRequest.model ?: "gpt-3.5-turbo",
+                    chatRequest.messages.map { CompatibleMessage.fromMessage(it) },
+                    chatRequest.temperature
+                )
             }
         }
 
-        fun stream(): Request {
-            this.stream = true
-            return this
-        }
+        fun tools(tools: JsonElement) = apply { this.tools = tools }
+
+        fun stream() = apply { this.stream = true }
     }
 
     @Serializable
-    data class Choice(val message: Message)
+    data class Choice<M>(val message: M)
 
     @Serializable
-    data class Response(val choices: List<Choice>)
+    data class Response<M>(val choices: List<Choice<M>>)
 
     private val chatUrl =
         URLBuilder(config.baseUrl).apply { path(config.baseUrl.fullPath, "chat", "completions") }.build()
 
-    override suspend fun chat(body: IChatService.ChatRequest): IChatService.ChatResponse {
+    override suspend fun chat(body: IChatService.ChatRequest): Message {
         val response = client.post(chatUrl) {
             contentType(ContentType.Application.Json)
             bearerAuth(config.token)
@@ -59,8 +66,8 @@ class ChatService(
         }
         val bodyString: String = response.body()
         if (response.status.value >= 400) throw Exception(bodyString)
-        val responseData = json.decodeFromString<Response>(bodyString)
-        return IChatService.ChatResponse(responseData.choices[0].message)
+        val responseData = json.decodeFromString<Response<Message>>(bodyString)
+        return responseData.choices[0].message
     }
 
     @Serializable
@@ -97,5 +104,21 @@ class ChatService(
             }
             println()
         }
+    }
+
+    override suspend fun <T : IToolCall> chatWithTools(
+        body: IChatService.ChatRequest,
+        tools: ITools<T>
+    ): IMessage {
+        val toolSchema = tools.getJsonObject()
+        val response = client.post(chatUrl) {
+            contentType(ContentType.Application.Json)
+            bearerAuth(config.token)
+            setBody(json.encodeToString(Request.fromChatRequest(body).tools(toolSchema)))
+        }
+        val bodyString: String = response.body()
+        if (response.status.value >= 400) throw Exception(bodyString)
+        val responseData = json.decodeFromString<Response<CompatibleMessage>>(bodyString)
+        return responseData.choices[0].message.toMessage()
     }
 }

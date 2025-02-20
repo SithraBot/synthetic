@@ -2,7 +2,7 @@ package examples
 
 import adapter.casing.openai.OpenAIAdapter
 import context.ContextManager
-import context.Message
+import store.Message
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import store.casing.inmemory.InMemoryMessagesStore
@@ -20,7 +20,7 @@ object ChatExample {
             apiAdapter = adapter
             messagesStore = InMemoryMessagesStore()
         }
-        val session = contextManager.createSession("...", "...")
+        val session = contextManager.createSession("...")
 
         contextManager.withSession(session) {
             val message = chat(Message("why hello world?"))

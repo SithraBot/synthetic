@@ -3,9 +3,7 @@ package context
 import adapter.IAdapter
 import adapter.IChatService
 import adapter.IEmbeddedService
-import store.IDocument
 import store.IMessagesStore
-import store.IRAGBase
 
 open class Context(
     apiAdapter: IAdapter,

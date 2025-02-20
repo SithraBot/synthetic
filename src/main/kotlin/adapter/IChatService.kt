@@ -1,18 +1,22 @@
 package adapter
 
-import context.Message
+import store.IMessage
+import store.Message
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
+import tools.ITools
+import tools.toolcall.IToolCall
 
 interface IChatService {
     @Serializable
-    data class ChatRequest(val messages: List<Message>, val model: String?, val temperature: Double = 0.7)
-
-    @Serializable
-    data class ChatResponse(val message: Message)
+    data class ChatRequest(
+        val messages: List<IMessage>,
+        val model: String?,
+        val temperature: Double = 0.7,
+    )
 
     class ChatRequestBuilder(
-        var messages: List<Message>,
+        var messages: List<IMessage>,
         var model: String?,
         var temperature: Double = 0.7
     ) {
@@ -39,7 +43,7 @@ interface IChatService {
          * @param message The Message object to be added to the chat request.
          * @return The current instance of ChatRequestBuilder for chaining.
          */
-        fun addMessage(message: Message) = apply { this.messages += message }
+        fun addMessage(message: IMessage) = apply { this.messages += message }
 
         /**
          * Adds a message to the chat request by evaluating the given lambda expression.
@@ -50,7 +54,7 @@ interface IChatService {
          * @param message The lambda expression which returns the Message object to be added to the chat request.
          * @return The current instance of ChatRequestBuilder for chaining.
          */
-        inline fun addMessage(message: () -> Message) = addMessage(message())
+        inline fun addMessage(message: () -> IMessage) = addMessage(message())
 
         /**
          * Sets the model for the chat request.
@@ -104,12 +108,20 @@ interface IChatService {
         }
     }
 
-    suspend fun chat(body: ChatRequest): ChatResponse
+    suspend fun chat(body: ChatRequest): Message
 
-    suspend fun chat(bodyBuilder: ChatRequestBuilder.() -> Unit): ChatResponse {
+    suspend fun <T : IToolCall> chatWithTools(body: ChatRequest, tools: ITools<T>): IMessage
+
+    suspend fun chat(bodyBuilder: ChatRequestBuilder.() -> Unit): Message {
         val builder = ChatRequestBuilder(emptyList(), null)
         builder.bodyBuilder()
         return chat(builder.build())
+    }
+
+    suspend fun <T : IToolCall> chatWithTools(tools: ITools<T>, bodyBuilder: ChatRequestBuilder.() -> Unit): IMessage {
+        val builder = ChatRequestBuilder(emptyList(), null)
+        builder.bodyBuilder()
+        return chatWithTools(builder.build(), tools)
     }
 
 

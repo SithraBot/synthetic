@@ -2,9 +2,10 @@ package examples
 
 import adapter.casing.openai.OpenAIAdapter
 import context.ContextManager
-import context.Message
+import store.Message
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import store.IMessage
 import store.casing.inmemory.InMemoryMessagesStore
 
 @Suppress("unused")
@@ -20,18 +21,16 @@ object StreamExample {
             apiAdapter = adapter
             messagesStore = InMemoryMessagesStore()
         }
-        val session = contextManager.createSession("...", "...")
+        val session = contextManager.createSession("...")
         contextManager.withSession(session) {
-            chatStream(Message("why hello world?")) { content, done ->
-                var message = ""
-                if (done) {
-                    addMessage(Message(message, Message.Role.ASSISTANT))
-                    println()
-                } else {
-                    message += content
-                    print(content)
-                }
+            val response = chatStream(Message("why hello world?"))
+            var message = ""
+            response.collect {
+                message += it
+                print(it)
             }
+            println()
+            addMessage(Message(message, IMessage.Role.ASSISTANT))
         }
     }
 }

@@ -2,12 +2,13 @@ package store.casing.inmemory
 
 import adapter.casing.openai.EmbeddedServiceTest
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions.*
+import rag.casing.inmemory.InMemoryRAGBase
 import kotlin.uuid.Uuid
 
 object InMemoryRAGBaseTest {
     val testRagBase by lazy {
         InMemoryRAGBase(
+            "text-embedding-v3",
             mutableMapOf(
                 runBlocking {
                     val id = Uuid.random()

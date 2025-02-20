@@ -6,9 +6,9 @@ import kotlin.uuid.Uuid
 class InMemoryMessagesStore : IMessagesStore {
     private val sessions = mutableMapOf<Uuid, IMessagesStore.MessagesSession>()
 
-    override fun createSession(chatModel: String, embedModel: String): Uuid {
+    override fun createSession(chatModel: String): Uuid {
         val sessionId = Uuid.random()
-        sessions[sessionId] = IMessagesStore.MessagesSession(sessionId, chatModel, embedModel)
+        sessions[sessionId] = IMessagesStore.MessagesSession(sessionId, chatModel)
         return sessionId
     }
 

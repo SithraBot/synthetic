@@ -1,14 +1,15 @@
-package store.casing.inmemory
+package rag.casing.inmemory
 
 import kotlinx.serialization.Serializable
-import store.IRAGBase
+import rag.IRAGBase
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.uuid.Uuid
 import kotlinx.serialization.json.Json
-import store.IDocument
+import rag.IDocument
 
 class InMemoryRAGBase(
+    override val model: String,
     private val documents: MutableMap<Uuid, Document> = mutableMapOf()
 ) : IRAGBase<InMemoryRAGBase.Document> {
     @Serializable
@@ -37,8 +38,8 @@ class InMemoryRAGBase(
     }
 
     companion object {
-        operator fun invoke(jsonString: String, json: Json = Json) =
-            InMemoryRAGBase(json.decodeFromString<List<Document>>(jsonString).associateBy { it.id }
+        operator fun invoke(model: String, jsonString: String, json: Json = Json) =
+            InMemoryRAGBase(model, json.decodeFromString<List<Document>>(jsonString).associateBy { it.id }
                 .toMutableMap())
     }
 

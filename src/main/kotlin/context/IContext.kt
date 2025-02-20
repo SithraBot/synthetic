@@ -3,10 +3,11 @@ package context
 import adapter.IChatService
 import adapter.IEmbeddedService
 import kotlinx.coroutines.flow.Flow
-import store.IDocument
-import store.IMessagesStore
-import store.IRAGBase
-import store.ISession
+import rag.IDocument
+import rag.IRAGBase
+import store.*
+import tools.ITools
+import tools.toolcall.IToolCall
 import kotlin.uuid.Uuid
 
 interface IContext {
@@ -14,8 +15,8 @@ interface IContext {
     val embeddedService: IEmbeddedService
     val messagesStore: IMessagesStore
 
-    fun createSession(chatModel: String, embedModel: String): Uuid {
-        return messagesStore.createSession(chatModel, embedModel)
+    fun createSession(chatModel: String): Uuid {
+        return messagesStore.createSession(chatModel)
     }
 
     suspend fun ISession.chat(message: Message): Message {
@@ -25,16 +26,51 @@ interface IContext {
             model = chatModel
             messages = chatMessages
         }
-        return response.message
+        return response
     }
 
     fun ISession.chatStream(message: Message): Flow<String> {
         addMessage(message)
         val chatMessages = messages
-        return chatService.chatStream({
+        return chatService.chatStream {
             model = chatModel
             messages = chatMessages
-        })
+        }
+    }
+
+    class ContextWithSessionAndTools<T : IToolCall>(
+        val session: ISession,
+        val tools: ITools<T>,
+        val context: IContext
+    ) :
+        IContext by context,
+        ITools<T> by tools,
+        ISession by session
+
+    suspend fun <T : IToolCall> ISession.withTools(
+        tools: ITools<T>,
+        callback: suspend ContextWithSessionAndTools<T>.() -> Unit
+    ) {
+        val context = ContextWithSessionAndTools(this, tools, this@IContext)
+        return context.callback()
+    }
+
+    suspend fun <T : IToolCall> ISession.chatWithTools(message: Message, tools: ITools<T>): IMessage {
+        addMessage(message)
+        val chatMessages = messages
+        return chatService.chatWithTools(tools) {
+            model = chatModel
+            messages = chatMessages
+        }
+    }
+
+    suspend fun <T : IToolCall> ISession.chatWithTools(result: List<ToolResultMessage>, tools: ITools<T>): IMessage {
+        addMessages(result)
+        val chatMessages = messages
+        return chatService.chatWithTools(tools) {
+            model = chatModel
+            messages = chatMessages
+        }
     }
 
     class ContextWithSession(val session: ISession, val context: IContext) :
@@ -47,34 +83,15 @@ interface IContext {
         context.callback()
     }
 
-    class ContextWithRAGBase<Doc : IDocument>(val ragBase: IRAGBase<Doc>, val context: IContext, val model: String) :
+    class ContextWithRAGBase<Doc : IDocument>(val ragBase: IRAGBase<Doc>, val context: IContext) :
         IContext by context,
         IRAGBase<Doc> by ragBase
-
-    class ContextWithRAGBaseAndSession<Doc : IDocument>(
-        val session: ISession,
-        val ragBase: IRAGBase<Doc>,
-        val context: IContext,
-    ) :
-        IContext by context,
-        IRAGBase<Doc> by ragBase,
-        ISession by session
-
-    suspend fun <Doc : IDocument> withRAGBase(
-        ragBase: IRAGBase<Doc>,
-        model: String,
-        callback: suspend ContextWithRAGBase<Doc>.() -> Unit
-    ) {
-        val context = ContextWithRAGBase(ragBase, this, model)
-        context.callback()
-    }
-
 
     suspend fun <Doc : IDocument> ContextWithSession.withRAGBase(
         ragBase: IRAGBase<Doc>,
         callback: suspend ContextWithRAGBase<Doc>.() -> Unit
     ) {
-        val context = ContextWithRAGBase(ragBase, this, embedModel)
+        val context = ContextWithRAGBase(ragBase, this)
         context.callback()
     }
 }

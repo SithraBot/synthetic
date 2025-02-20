@@ -1,6 +1,7 @@
 package adapter.casing.openai
 
-import context.Message
+import store.IMessage
+import store.Message
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 
@@ -12,19 +13,19 @@ internal object ChatServiceTest {
         val response = runBlocking {
             testChatService.chat {
                 model = "deepseek-r1-distill-qwen-1.5b"
-                messages = listOf(Message(role = Message.Role.USER, content = "hello"))
+                messages = listOf(Message(role = IMessage.Role.USER, content = "hello"))
             }
         }
-        assert(response.message.role == Message.Role.ASSISTANT)
-        assert(response.message.content.isNotEmpty())
-        println(response.message.content)
+        assert(response.role == IMessage.Role.ASSISTANT)
+        assert(response.content.isNotEmpty())
+        println(response.content)
     }
 
     @Test
     fun chatStream() = runBlocking {
         val response = testChatService.chatStream({
             model { "deepseek-r1-distill-qwen-1.5b" }
-            messages { listOf(Message(role = Message.Role.USER, content = "hello")) }
+            messages { listOf(Message(role = IMessage.Role.USER, content = "hello")) }
         })
         response.collect {
             print(it)

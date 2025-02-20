@@ -158,6 +158,7 @@ class OpenAIAdapter(private val config: Config) : IAdapter {
 
     private val json = Json {
         ignoreUnknownKeys = true
+        explicitNulls = false
         encodeDefaults = true
     }
     private val client = HttpClient(CIO) {

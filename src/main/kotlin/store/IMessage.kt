@@ -1,13 +1,9 @@
-package context
+package store
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Serializable
-data class Message(
-    val content: String,
-    val role: Role = Role.USER,
-) {
+sealed interface IMessage {
     @Serializable
     enum class Role {
         @SerialName("user")
@@ -17,6 +13,9 @@ data class Message(
         SYSTEM,
 
         @SerialName("assistant")
-        ASSISTANT
+        ASSISTANT,
+
+        @SerialName("tool")
+        TOOL
     }
 }

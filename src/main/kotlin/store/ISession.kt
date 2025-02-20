@@ -1,12 +1,13 @@
 package store
 
-import context.Message
 import kotlin.uuid.Uuid
 
 interface ISession {
     val sessionId: Uuid
     val chatModel: String
-    val embedModel: String
-    val messages: List<Message>
-    fun addMessage(message: Message): Boolean
+    val messages: List<IMessage>
+    fun addMessage(message: IMessage): Boolean
+    fun addMessages(messages: Collection<IMessage>) {
+        messages.forEach { addMessage(it) }
+    }
 }
