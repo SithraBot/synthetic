@@ -1,18 +1,17 @@
 <h1 align="center"><img src="https://github.com/SithraBot/synthetis/blob/dev/icon_text.svg" alt="Synthetis" height="64px"/></h1>
 
-**Synthetis** is a lightweight Kotlin library for building LLM-driven applications, specializing in RAG (
-Retrieval-Augmented Generation) pipelines. Designed for API flexibility, it implements an **adapter-first architecture**
-to seamlessly integrate any AI provider (OpenAI, HuggingFace, custom endpoints) and data storage system.
+*Synthetis* is a lightweight Kotlin/JVM library for building LLM-driven applications, specializing in RAG (Retrieval-Augmented Generation) pipelines and agent systems. Designed for API flexibility, it implements an adapter-first architecture to seamlessly integrate any AI provider (OpenAI, HuggingFace, custom endpoints) and data storage system.
 
-Core features:
+**Core features:**
 
-- Modular RAG components: Document processors, embedding interfaces, and retriever/reranker blueprints
-- Agnostic data layer: Abstracted connectors for vector DBs, SQL/NoSQL, or file systems via unified interfaces
-- API-neutral LLM operations: Swap models/endpoints without rewriting chains/agents
-- Coroutine-native pipelines for async workflows
-- Minimal abstraction overhead with clear extension points
+- **Modular RAG components**: Document processors, embedding interfaces, and retriever/reranker blueprints
+- **Flexible Agent framework**: Custom tool integration, stateful conversation management, and goal-oriented execution flows
+- **Agnostic data layer**: Abstracted connectors for vector DBs, SQL/NoSQL, or file systems via unified interfaces
+- **API-neutral LLM operations**: Swap models/endpoints without rewriting chains/agents
+- **Coroutine-native pipelines**: Async workflows for both RAG and Agent operations
+- **Minimal abstraction overhead**: Clear extension points for custom agent logic and data handlers
 
-Optimized for Kotlin developers prioritizing API interoperability and custom data flows over framework rigidity.
+Optimized for Kotlin/JVM developers prioritizing API interoperability and custom data flows over framework rigidity.
 
 ## Usage
 
