@@ -1,27 +1,21 @@
-<h1 align="center"><img src="https://github.com/SithraBot/synthetis/blob/dev/icon_text.svg" alt="Synthetis" height="64px"/></h1>
+# Synthetis
 
-[__**查看中文介绍**__](https://github.com/SithraBot/synthetis/blob/dev/README-ZH.md)
+Synthetis 是一个轻量级 Kotlin 库，专为构建 LLM 驱动型应用设计，核心支持 RAG（检索增强生成）管道和智能体（Agent）系统。采用适配器优先架构，可无缝集成任意 AI 服务提供商（OpenAI、HuggingFace、自定义端点）和数据存储系统。
 
-**Synthetis** is a lightweight Kotlin/JVM library for building LLM-driven applications, specializing in RAG (
-Retrieval-Augmented Generation) pipelines and agent systems. Designed for API flexibility, it implements an
-adapter-first architecture to seamlessly integrate any AI provider (OpenAI, HuggingFace, custom endpoints) and data
-storage system.
+**核心特性：**
 
-**Core features:**
+- **模块化 RAG 组件**：文档处理器、嵌入接口、检索器/重排器模板
+- **灵活的 Agent 框架**：支持自定义工具集成、带状态的会话管理、目标导向的任务流
+- **数据层无关性**：通过统一接口抽象化向量数据库/SQL/NoSQL/文件系统的连接
+- **API 无关的 LLM 操作**：自由切换模型/服务端点而无需重构业务链或 Agent
+- **协程优先的管道**：原生支持 RAG 和 Agent 的异步工作流
+- **最小抽象开销**：提供清晰的扩展点用于定制 Agent 逻辑和数据处理器
 
-- **Modular RAG components**: Document processors, embedding interfaces, and retriever/reranker blueprints
-- **Flexible Agent framework**: Custom tool integration, stateful conversation management, and goal-oriented execution
-  flows
-- **Agnostic data layer**: Abstracted connectors for vector DBs, SQL/NoSQL, or file systems via unified interfaces
-- **API-neutral LLM operations**: Swap models/endpoints without rewriting chains/agents
-- **Coroutine-native pipelines**: Async workflows for both RAG and Agent operations
-- **Minimal abstraction overhead**: Clear extension points for custom agent logic and data handlers
+专为重视 API 互操作性和自定义数据流，而非框架约束的 Kotlin 开发者优化。
 
-Optimized for Kotlin/JVM developers prioritizing API interoperability and custom data flows over framework rigidity.
+## 例子
 
-## Usage
-
-### Common
+### 普通聊天 (连续对话)
 
 ```kotlin
 private val apiKey = "..."
@@ -57,7 +51,7 @@ fun main() = runBlocking {
 }
 ```
 
-### RAG
+### RAG (检索增强生成)
 
 ```kotlin
 // ... ...
@@ -86,7 +80,7 @@ fun ragTemplate(question: String, docs: List<IDocument>): String {
 }
 ```
 
-### Tools
+### Tools (函数调用)
 
 ```kotlin
 // ... ...
@@ -113,7 +107,7 @@ ctx.withSession(session) {
 }
 ```
 
-### Tools + RAG
+### Tools + RAG (组合使用)
 
 ```kotlin
 // ... ...
