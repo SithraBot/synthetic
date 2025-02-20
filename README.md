@@ -26,20 +26,20 @@ fun main() = runBlocking {
         baseUrl = url
         token = apiKey
     }
-    val contextManager = ContextManager {
+    val ctx = ContextManager {
         apiAdapter = adapter
         messagesStore = MessagesStoreInMemory()
     }
-    val session = contextManager.createSession("...", "...")
+    val session = ctx.createSession("...", "...")
     // common
-    contextManager.withSession(session) {
+    ctx.withSession(session) {
         val message = chat(Message("why hello world?"))
         println(message.content)
         addMessage(message)
     }
 
     // streaming
-    contextManager.withSession(session) {
+    ctx.withSession(session) {
         val response = chatStream(Message("why hello world?"))
         var message = ""
         response.collect {
@@ -56,7 +56,7 @@ fun main() = runBlocking {
 
 ```kotlin
 // ... ...
-testContextManager.withSession(session) {
+ctx.withSession(session) {
     withRAGBase(testRAGBase) {
         suspend fun ask(question: String): Message =
             chat(Message(ragTemplate(question, search(question, 1))))
@@ -78,5 +78,59 @@ fun ragTemplate(question: String, docs: List<IDocument>): String {
             docs: $docsString
             answer:
         """.trimIndent()
+}
+```
+
+### Tools
+
+```kotlin
+// ... ...
+val tools = OpenAIFunctionTools(Functions())
+
+@Serializable
+data class AddInput(@Description("first number") val a: Int, @Description("second number") val b: Int)
+
+@Description("add two numbers")
+fun add(input: AddInput): String {
+    return (input.a + input.b).toString()
+}
+
+tools.functions.register(this::add)
+
+
+val session = testContextManager.createSession("qwen-turbo")
+ctx.withSession(session) {
+    withTools(OpenAIFunctionToolsTest.testOpenAIFunctionTools) {
+        val message = chatWithTools(Message("134 + 983 等于几？"))
+        println(message.content)
+        addMessage(message)
+    }
+}
+```
+
+### Tools + RAG
+
+```kotlin
+// ... ...
+
+val tools = OpenAIFunctionTools(Functions())
+val session = testContextManager.createSession("qwen-turbo")
+ctx.withSession(session) {
+    withRAGBase(testRAGBase) {
+        @Serializable
+        class SearchInput(@Description("keywords") val keywords: String)
+
+        tools.functions.register("searchDocuments", "search documents about any by keywords") { input: SearchInput ->
+            runBlocking {
+                search(input.keywords, 1).joinToString(";;") { it.document }
+            }
+        }
+
+        withTools(tools) {
+            val message = chatWithTools(Message("古关优是谁？"))
+            println(message.content)
+            addMessage(message)
+        }
+    }
 }
 ```
