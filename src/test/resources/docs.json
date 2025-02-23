@@ -1,5 +1,5 @@
-{
-  "1c7efd06-7d2a-4de4-afa8-e4aee11e7a56": {
+[
+  {
     "id": "1c7efd06-7d2a-4de4-afa8-e4aee11e7a56",
     "document": "Brian Kernighan, author of one of the most widely read programming books, \"C Programming Language\", also created \"Hello, World\". He first referenced ‘Hello World’ in the C Programming Language book’s predecessor: A Tutorial Introduction to the Programming Language B published in 1973.",
     "title": "Where does ‘Hello World’ come from?",
@@ -1030,7 +1030,7 @@
       -0.02727037
     ]
   },
-  "4c20c317-f7e2-4586-b5e1-97c5538178cf": {
+  {
     "id": "4c20c317-f7e2-4586-b5e1-97c5538178cf",
     "document": "Kozeki Ui (古関ウイ) is one of the students studying in Trinity General School who wields a Sniper Rifle. She is a head of the Library Committee.",
     "title": "Kozeki Ui's personal profile.",
@@ -2061,4 +2061,4 @@
       -0.009448437
     ]
   }
-}
+]
