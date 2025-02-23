@@ -2,22 +2,23 @@ package context
 
 import adapter.IAdapter
 import adapter.IChatService
-import adapter.IEmbeddedService
 import store.IMessagesStore
 
 open class Context(
-    apiAdapter: IAdapter,
+    override val chatService: IChatService,
     override val messagesStore: IMessagesStore,
 ) : IContext {
-    override val chatService: IChatService = apiAdapter.getChatService()
-    override val embeddedService: IEmbeddedService = apiAdapter.getEmbeddedService()
 
     class ContextBuilder(
+        var chatService: IChatService? = null,
         var apiAdapter: IAdapter? = null,
         var messagesStore: IMessagesStore? = null,
     ) {
-        fun setApiAdapter(apiAdapter: IAdapter) = apply { this.apiAdapter = apiAdapter }
+        fun setChatService(chatService: IChatService) = apply { this.chatService = chatService }
+        fun setChatService(adapter: IAdapter) = apply { this.chatService = adapter.getChatService() }
+        fun setAdapter(adapter: IAdapter) = apply { this.apiAdapter = adapter }
         fun setMessagesStore(messagesStore: IMessagesStore) = apply { this.messagesStore = messagesStore }
-        fun build() = Context(apiAdapter!!, messagesStore!!)
+        fun build() =
+            Context(chatService ?: apiAdapter?.getChatService() ?: throw Exception("ChatService not set"), messagesStore!!)
     }
 }

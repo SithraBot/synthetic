@@ -1,4 +1,4 @@
-package store.casing.inmemory
+package store.casing
 
 object InMemoryMessagesStoreTest {
     val testMessagesStore = InMemoryMessagesStore()

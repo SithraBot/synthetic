@@ -6,7 +6,7 @@ import store.Message
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import store.IMessage
-import store.casing.inmemory.InMemoryMessagesStore
+import store.casing.InMemoryMessagesStore
 
 @Suppress("unused")
 object StreamExample {

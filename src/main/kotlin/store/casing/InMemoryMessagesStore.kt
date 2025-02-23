@@ -1,4 +1,4 @@
-package store.casing.inmemory
+package store.casing
 
 import store.IMessagesStore
 import kotlin.uuid.Uuid

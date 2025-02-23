@@ -32,7 +32,7 @@ data class CompatibleMessage(
                 null
             )
 
-            is ToolResultMessage -> CompatibleMessage(message.role, message.content, null, message.toolCallId)
+            is ToolResultMessage -> CompatibleMessage(IMessage.Role.TOOL, message.content, null, message.toolCallId)
             is Message -> CompatibleMessage(message.role, message.content, null, null)
         }
     }

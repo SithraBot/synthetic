@@ -3,11 +3,12 @@ package context
 import adapter.casing.HybridTest
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import store.casing.inmemory.InMemoryRAGBaseTest
-import store.casing.inmemory.InMemoryMessagesStoreTest
+import rag.casing.retriever.InMemoryVectorRetrieverTest
+import store.casing.InMemoryMessagesStoreTest
 import kotlin.test.Test
 import rag.IDocument
-import rag.search
+import rag.casing.reranker.Limiter
+import rag.casing.retriever.RRetriever
 import store.Message
 import tools.Functions
 import tools.casing.OpenAIFunctionTools
@@ -16,7 +17,7 @@ import tools.chatWithTools
 import tools.schema.Description
 
 object ContextManagerTest {
-    val testRAGBase = InMemoryRAGBaseTest.testRagBase
+    val testRAGBase = RRetriever(InMemoryVectorRetrieverTest.testRagBase, Limiter(1))
 
     private val testContextManager = ContextManager {
         apiAdapter = HybridTest.testHybrid
@@ -33,9 +34,9 @@ object ContextManagerTest {
             val message2 = chat(Message("who are you"))
             println(message2.content)
             addMessage(message2)
-            withRAGBase(testRAGBase) {
+            withRAG(testRAGBase) {
                 suspend fun ask(question: String): Message =
-                    chat(Message(dbg(ragTemplate(question, search(question, 1)))))
+                    chat(Message(dbg(ragTemplate(question, searchDocs(question)))))
 
                 val message3 = ask("why do we use Hello World?")
                 println(message3.content)
@@ -64,14 +65,17 @@ object ContextManagerTest {
         val tools = OpenAIFunctionTools(Functions())
         val session = testContextManager.createSession("qwen-turbo")
         testContextManager.withSession(session) {
-            withRAGBase(testRAGBase) {
+            withRAG(testRAGBase) {
                 @Serializable
                 class SearchInput(@Description("keywords") val keywords: String)
 
-                tools.functions.register("searchDocuments", "search documents about any by keywords") { input: SearchInput ->
+                tools.functions.register(
+                    "searchDocuments",
+                    "search documents about any by keywords"
+                ) { input: SearchInput ->
                     println("\n-- search ${input.keywords} -- \n")
                     runBlocking {
-                        search(input.keywords, 1).joinToString(";;") { it.document }
+                        searchDocs(input.keywords).joinToString(";;") { it.document }
                     }
                 }
 

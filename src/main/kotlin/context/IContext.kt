@@ -4,7 +4,7 @@ import adapter.IChatService
 import adapter.IEmbeddedService
 import kotlinx.coroutines.flow.Flow
 import rag.IDocument
-import rag.IRAGBase
+import rag.IRetriever
 import store.*
 import tools.ITools
 import tools.toolcall.IToolCall
@@ -12,7 +12,6 @@ import kotlin.uuid.Uuid
 
 interface IContext {
     val chatService: IChatService
-    val embeddedService: IEmbeddedService
     val messagesStore: IMessagesStore
 
     fun createSession(chatModel: String): Uuid {
@@ -83,15 +82,15 @@ interface IContext {
         context.callback()
     }
 
-    class ContextWithRAGBase<Doc : IDocument>(val ragBase: IRAGBase<Doc>, val context: IContext) :
+    class ContextWithRAG<Doc : IDocument>(val retriever: IRetriever<Doc>, val context: IContext) :
         IContext by context,
-        IRAGBase<Doc> by ragBase
+        IRetriever<Doc> by retriever
 
-    suspend fun <Doc : IDocument> ContextWithSession.withRAGBase(
-        ragBase: IRAGBase<Doc>,
-        callback: suspend ContextWithRAGBase<Doc>.() -> Unit
+    suspend fun <Doc : IDocument> ContextWithSession.withRAG(
+        retriever: IRetriever<Doc>,
+        callback: suspend ContextWithRAG<Doc>.() -> Unit
     ) {
-        val context = ContextWithRAGBase(ragBase, this)
+        val context = ContextWithRAG(retriever, this)
         context.callback()
     }
 }
