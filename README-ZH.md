@@ -18,8 +18,8 @@
 ### 普通聊天 (连续对话)
 
 ```kotlin
-private val apiKey = "..."
-private val url = Url("...")
+private val apiKey = "sk-xxxxxxxxxx"
+private val url = Url("https://deom.demo.com/v1")
 fun main() = runBlocking {
     val adapter = OpenAIAdapter {
         baseUrl = url
@@ -29,7 +29,7 @@ fun main() = runBlocking {
         apiAdapter = adapter
         messagesStore = MessagesStoreInMemory()
     }
-    val session = ctx.createSession("...", "...")
+    val session = ctx.createSession("demo-model")
     // common
     ctx.withSession(session) {
         val message = chat(Message("why hello world?"))
@@ -55,10 +55,18 @@ fun main() = runBlocking {
 
 ```kotlin
 // ... ...
+val retriever = InMemoryVectorRetriever {
+    model = "demo-embedding-model"
+    adapter = OpenAIAdapterTest.testAIAdapter
+    addReranker(Limiter(1))
+    addDocuments(
+        // ...
+    )
+}
 ctx.withSession(session) {
-    withRAGBase(testRAGBase) {
+    withRAGBase(retriever) {
         suspend fun ask(question: String): Message =
-            chat(Message(ragTemplate(question, search(question, 1))))
+            chat(Message(ragTemplate(question, searchDocs(question))))
 
         val message1 = ask("why do we use Hello World?")
         println(message1.content)
@@ -94,12 +102,12 @@ fun add(input: AddInput): String {
     return (input.a + input.b).toString()
 }
 
-tools.functions.register(this::add)
+tools.functions.register(::add)
 
+val session = ctx.createSession("demo-model")
 
-val session = testContextManager.createSession("qwen-turbo")
 ctx.withSession(session) {
-    withTools(OpenAIFunctionToolsTest.testOpenAIFunctionTools) {
+    withTools(tools) {
         val message = chatWithTools(Message("134 + 983 等于几？"))
         println(message.content)
         addMessage(message)
@@ -113,7 +121,7 @@ ctx.withSession(session) {
 // ... ...
 
 val tools = OpenAIFunctionTools(Functions())
-val session = testContextManager.createSession("qwen-turbo")
+val session = testContextManager.createSession("demo-model")
 ctx.withSession(session) {
     withRAGBase(testRAGBase) {
         @Serializable

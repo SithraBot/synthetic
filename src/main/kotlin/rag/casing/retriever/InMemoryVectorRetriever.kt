@@ -14,7 +14,7 @@ import rag.IRetriever
 class InMemoryVectorRetriever(
     private val embedModel: String,
     private val embeddedService: IEmbeddedService,
-    private val documents: MutableMap<Uuid, Document> = mutableMapOf(),
+    val documents: MutableMap<Uuid, Document> = mutableMapOf(),
     override val rerankers: List<IReranker<Document>> = listOf()
 ) : IRetriever<InMemoryVectorRetriever.Document> {
     @Serializable
@@ -42,6 +42,39 @@ class InMemoryVectorRetriever(
         }
     }
 
+    class InMemoryVectorRetrieverBuilder(
+        var model: String? = null,
+        var embeddedService: IEmbeddedService? = null,
+        var adapter: IAdapter? = null,
+        private val documents: MutableMap<Uuid, Document> = mutableMapOf(),
+        private val rerankers: MutableList<IReranker<Document>> = mutableListOf()
+    ) {
+        fun setEmbedModel(embedModel: String) = apply { this.model = embedModel }
+
+        fun setEmbeddedService(embeddedService: IEmbeddedService) = apply { this.embeddedService = embeddedService }
+
+        fun setEmbeddedService(adapter: IAdapter) = apply { this.adapter = adapter }
+
+        fun addReranker(reranker: IReranker<Document>) = apply { rerankers.add(reranker) }
+
+        fun addRerankers(rerankers: List<IReranker<Document>>) = apply { rerankers.forEach { addReranker(it) } }
+
+        fun addRerankers(vararg rerankers: IReranker<Document>) = apply { rerankers.forEach { addReranker(it) } }
+
+        fun addDocument(document: Document) = apply { documents[document.id] = document }
+
+        fun addDocuments(documents: List<Document>) = apply { documents.forEach { addDocument(it) } }
+
+        fun addDocuments(vararg documents: Document) = apply { documents.forEach { addDocument(it) } }
+
+        fun build() = InMemoryVectorRetriever(
+            model!!,
+            embeddedService ?: adapter?.getEmbeddedService() ?: throw Exception("EmbeddedService not set"),
+            documents,
+            rerankers
+        )
+    }
+
     companion object {
         operator fun invoke(model: String, embeddedService: IEmbeddedService, jsonString: String, json: Json = Json) =
             InMemoryVectorRetriever(
@@ -58,6 +91,9 @@ class InMemoryVectorRetriever(
 
         operator fun invoke(model: String, adapter: IAdapter, documents: List<Document>) =
             InMemoryVectorRetriever(model, adapter.getEmbeddedService(), documents)
+
+        operator fun invoke(builder: InMemoryVectorRetrieverBuilder.() -> Unit) =
+            InMemoryVectorRetrieverBuilder().apply(builder).build()
     }
 
     private fun cosineSimilarity(v1: FloatArray, v2: FloatArray): Float {

@@ -1,10 +1,15 @@
 import java.util.*
 
 object Props {
-    private val secret = kotlin.run {
+    private val secret = run {
         val props = Properties()
         props.load(Props::class.java.getResourceAsStream("secrets.properties"))
         props
+    }
+
+    val documents = run {
+        val docs = Props::class.java.getResourceAsStream("docs.json")
+        docs!!.bufferedReader().use { it.readText() }
     }
 
     fun getDeepSeekKey(): String {
