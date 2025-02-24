@@ -3,6 +3,7 @@ package rag.casing.retriever
 import Props
 import adapter.casing.openai.OpenAIAdapterTest
 import kotlinx.serialization.json.Json
+import org.sithra.synthetic.rag.casing.retriever.InMemoryVectorRetriever
 
 object InMemoryVectorRetrieverTest {
     val testRagBase by lazy {

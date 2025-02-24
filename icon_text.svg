@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="211.07678"
+   width="212.96478"
    height="48"
-   viewBox="0 0 211.07678 48"
+   viewBox="0 0 212.96478 48"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -49,7 +49,8 @@
        y1="71.435295"
        x2="202.54346"
        y2="-14.90196"
-       gradientUnits="userSpaceOnUse" /></defs><g
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,2)" /></defs><g
      id="layer1"><g
        id="layer1-2"><rect
          style="fill:url(#linearGradient2);stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
@@ -74,9 +75,9 @@
        xml:space="preserve"
        style="font-size:32px;line-height:0.8;font-family:'Sarasa Mono SC Nerd Font';-inkscape-font-specification:'Sarasa Mono SC Nerd Font';fill:url(#linearGradient4);stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
        x="54.660744"
-       y="32.368"
+       y="34.368"
        id="text1"><tspan
          id="tspan1"
          x="54.660744"
-         y="32.368"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32px;font-family:Chillax;-inkscape-font-specification:'Chillax Bold';fill:url(#linearGradient4);stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">Synthetis</tspan></text></g></svg>
+         y="34.368"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32px;font-family:Chillax;-inkscape-font-specification:'Chillax Bold';fill:url(#linearGradient4);stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">Synthetic</tspan></text></g></svg>

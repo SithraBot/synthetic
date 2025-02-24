@@ -1,8 +1,8 @@
 package context
 
 import kotlinx.serialization.json.Json
-import store.IMessage
-import store.Message
+import org.sithra.synthetic.store.IMessage
+import org.sithra.synthetic.store.Message
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

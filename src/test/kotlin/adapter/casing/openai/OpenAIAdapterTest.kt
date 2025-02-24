@@ -2,6 +2,9 @@ package adapter.casing.openai
 
 import Props
 import io.ktor.http.*
+import org.sithra.synthetic.adapter.casing.openai.ChatService
+import org.sithra.synthetic.adapter.casing.openai.EmbeddedService
+import org.sithra.synthetic.adapter.casing.openai.OpenAIAdapter
 import kotlin.test.Test
 
 internal object OpenAIAdapterTest {

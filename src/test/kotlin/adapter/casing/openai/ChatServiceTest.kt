@@ -1,7 +1,7 @@
 package adapter.casing.openai
 
-import store.IMessage
-import store.Message
+import org.sithra.synthetic.store.IMessage
+import org.sithra.synthetic.store.Message
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 

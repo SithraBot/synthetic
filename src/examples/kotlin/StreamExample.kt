@@ -1,12 +1,12 @@
 package examples
 
-import adapter.casing.openai.OpenAIAdapter
-import context.ContextManager
-import store.Message
+import org.sithra.synthetic.adapter.casing.openai.OpenAIAdapter
+import org.sithra.synthetic.context.ContextManager
+import org.sithra.synthetic.store.Message
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import store.IMessage
-import store.casing.InMemoryMessagesStore
+import org.sithra.synthetic.store.IMessage
+import org.sithra.synthetic.store.casing.InMemoryMessagesStore
 
 @Suppress("unused")
 object StreamExample {

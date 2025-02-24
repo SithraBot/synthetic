@@ -1,8 +1,8 @@
-<h1 align="center"><img src="https://github.com/SithraBot/synthetis/blob/dev/icon_text.svg" alt="Synthetis" height="64px"/></h1>
+<h1 align="center"><img src="https://github.com/SithraBot/synthetic/blob/dev/icon_text.svg" alt="Synthetic" height="64px"/></h1>
 
 [__**查看中文介绍**__](https://github.com/SithraBot/synthetis/blob/dev/README-ZH.md)
 
-**Synthetis** is a lightweight Kotlin/JVM library for building LLM-driven applications, specializing in RAG (
+**Synthetic** is a lightweight Kotlin/JVM library for building LLM-driven applications, specializing in RAG (
 Retrieval-Augmented Generation) pipelines and agent systems. Designed for API flexibility, it implements an
 adapter-first architecture to seamlessly integrate any AI provider (OpenAI, HuggingFace, custom endpoints) and data
 storage system.

@@ -1,8 +1,9 @@
 package tools.casing
 
-import tools.Functions
+import org.sithra.synthetic.tools.Functions
 import kotlinx.serialization.Serializable
-import tools.schema.Description
+import org.sithra.synthetic.tools.casing.OpenAIFunctionTools
+import org.sithra.synthetic.tools.schema.Description
 
 object OpenAIFunctionToolsTest {
     val testOpenAIFunctionTools = OpenAIFunctionTools(Functions())

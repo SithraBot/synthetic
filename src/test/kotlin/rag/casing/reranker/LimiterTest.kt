@@ -1,7 +1,8 @@
 package rag.casing.reranker
 
 import kotlinx.coroutines.runBlocking
-import rag.IDocument
+import org.sithra.synthetic.rag.IDocument
+import org.sithra.synthetic.rag.casing.reranker.Limiter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.Uuid

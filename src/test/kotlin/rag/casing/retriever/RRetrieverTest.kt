@@ -1,10 +1,11 @@
 package rag.casing.retriever
 
 import kotlinx.coroutines.runBlocking
-import rag.IDocument
-import rag.IReranker
-import rag.IRetriever
-import rag.casing.reranker.Limiter
+import org.sithra.synthetic.rag.IDocument
+import org.sithra.synthetic.rag.IReranker
+import org.sithra.synthetic.rag.IRetriever
+import org.sithra.synthetic.rag.casing.retriever.RRetriever
+import org.sithra.synthetic.rag.casing.reranker.Limiter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.Uuid

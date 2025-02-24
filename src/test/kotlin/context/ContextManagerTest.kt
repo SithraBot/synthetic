@@ -3,18 +3,19 @@ package context
 import adapter.casing.HybridTest
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
+import org.sithra.synthetic.context.ContextManager
 import rag.casing.retriever.InMemoryVectorRetrieverTest
 import store.casing.InMemoryMessagesStoreTest
 import kotlin.test.Test
-import rag.IDocument
-import rag.casing.reranker.Limiter
-import rag.casing.retriever.RRetriever
-import store.Message
-import tools.Functions
-import tools.casing.OpenAIFunctionTools
+import org.sithra.synthetic.rag.IDocument
+import org.sithra.synthetic.rag.casing.reranker.Limiter
+import org.sithra.synthetic.rag.casing.retriever.RRetriever
+import org.sithra.synthetic.store.Message
+import org.sithra.synthetic.tools.Functions
+import org.sithra.synthetic.tools.casing.OpenAIFunctionTools
 import tools.casing.OpenAIFunctionToolsTest
-import tools.chatWithTools
-import tools.schema.Description
+import org.sithra.synthetic.tools.chatWithTools
+import org.sithra.synthetic.tools.schema.Description
 
 object ContextManagerTest {
     val testRAGBase = RRetriever(InMemoryVectorRetrieverTest.testRagBase, Limiter(1))

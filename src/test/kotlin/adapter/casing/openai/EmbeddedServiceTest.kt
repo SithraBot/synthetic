@@ -1,6 +1,5 @@
 package adapter.casing.openai
 
-import adapter.IEmbeddedService
 import adapter.casing.HybridTest
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test

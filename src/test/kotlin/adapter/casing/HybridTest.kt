@@ -1,11 +1,12 @@
 package adapter.casing
 
 import Props
-import adapter.casing.openai.ChatService
-import adapter.casing.openai.EmbeddedService
-import adapter.casing.openai.OpenAIAdapter
+import org.sithra.synthetic.adapter.casing.openai.ChatService
+import org.sithra.synthetic.adapter.casing.openai.EmbeddedService
+import org.sithra.synthetic.adapter.casing.openai.OpenAIAdapter
 import adapter.casing.openai.OpenAIAdapterTest
 import io.ktor.http.*
+import org.sithra.synthetic.adapter.casing.Hybrid
 import kotlin.test.Test
 
 object HybridTest {
