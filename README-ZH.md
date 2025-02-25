@@ -20,13 +20,13 @@ RAG（检索增强生成）管道和智能体（Agent）系统。采用适配器
 
 ```kotlin
 private val apiKey = "sk-xxxxxxxxxx"
-private val url = Url("https://deom.demo.com/v1")
+private val url = Url("https://synthetic.sithra.org/v1")
 fun main() = runBlocking {
     val adapter = OpenAIAdapter {
         baseUrl = url
         token = apiKey
     }
-    val ctx = ContextManager {
+    val ctx = Context {
         apiAdapter = adapter
         messagesStore = MessagesStoreInMemory()
     }
@@ -51,6 +51,7 @@ fun main() = runBlocking {
     }
 }
 ```
+
 
 ### RAG (检索增强生成)
 

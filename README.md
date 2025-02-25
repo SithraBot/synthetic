@@ -31,7 +31,7 @@ fun main() = runBlocking {
         baseUrl = url
         token = apiKey
     }
-    val ctx = ContextManager {
+    val ctx = Context {
         apiAdapter = adapter
         messagesStore = MessagesStoreInMemory()
     }
