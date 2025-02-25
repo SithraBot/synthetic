@@ -20,13 +20,13 @@ object HybridTest {
 
     @Test
     fun getChatService() {
-        val chatService = testHybrid.getChatService()
+        val chatService = testHybrid.chatService
         assert(chatService is ChatService)
     }
 
     @Test
     fun getEmbeddedService() {
-        val embeddedService = testHybrid.getEmbeddedService()
+        val embeddedService = testHybrid.embeddedService
         assert(embeddedService is EmbeddedService)
     }
 }

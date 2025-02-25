@@ -3,7 +3,7 @@ package context
 import adapter.casing.HybridTest
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import org.sithra.synthetic.context.ContextManager
+import org.sithra.synthetic.context.Context
 import rag.casing.retriever.InMemoryVectorRetrieverTest
 import store.casing.InMemoryMessagesStoreTest
 import kotlin.test.Test
@@ -17,10 +17,10 @@ import tools.casing.OpenAIFunctionToolsTest
 import org.sithra.synthetic.tools.chatWithTools
 import org.sithra.synthetic.tools.schema.Description
 
-object ContextManagerTest {
-    val testRAGBase = RRetriever(InMemoryVectorRetrieverTest.testRagBase, Limiter(1))
+object ContextTest {
+    val testRetriever = RRetriever(InMemoryVectorRetrieverTest.testRagBase, Limiter(1))
 
-    private val testContextManager = ContextManager {
+    private val testContextManager = Context {
         apiAdapter = HybridTest.testHybrid
         messagesStore = InMemoryMessagesStoreTest.testMessagesStore
     }
@@ -35,17 +35,16 @@ object ContextManagerTest {
             val message2 = chat(Message("who are you"))
             println(message2.content)
             addMessage(message2)
-            withRAG(testRAGBase) {
-                suspend fun ask(question: String): Message =
-                    chat(Message(dbg(ragTemplate(question, searchDocs(question)))))
 
-                val message3 = ask("why do we use Hello World?")
-                println(message3.content)
-                addMessage(message3)
-                val message4 = ask("古关优是谁？")
-                println(message4.content)
-                addMessage(message4)
-            }
+            suspend fun ask(question: String): Message =
+                chat(Message(dbg(ragTemplate(question, testRetriever(question)))))
+
+            val message3 = ask("why do we use Hello World?")
+            println(message3.content)
+            addMessage(message3)
+            val message4 = ask("古关优是谁？")
+            println(message4.content)
+            addMessage(message4)
         }
     }
 
@@ -66,25 +65,23 @@ object ContextManagerTest {
         val tools = OpenAIFunctionTools(Functions())
         val session = testContextManager.createSession("qwen-turbo")
         testContextManager.withSession(session) {
-            withRAG(testRAGBase) {
-                @Serializable
-                class SearchInput(@Description("keywords") val keywords: String)
+            @Serializable
+            class SearchInput(@Description("keywords") val keywords: String)
 
-                tools.functions.register(
-                    "searchDocuments",
-                    "search documents about any by keywords"
-                ) { input: SearchInput ->
-                    println("\n-- search ${input.keywords} -- \n")
-                    runBlocking {
-                        searchDocs(input.keywords).joinToString(";;") { it.document }
-                    }
+            tools.functions.register(
+                "searchDocuments",
+                "search documents about any by keywords"
+            ) { input: SearchInput ->
+                println("\n-- search ${input.keywords} -- \n")
+                runBlocking {
+                    testRetriever(input.keywords).joinToString(";;") { it.document }
                 }
+            }
 
-                withTools(tools) {
-                    val message = chatWithTools(Message("古关优是谁？"))
-                    println(message.content)
-                    addMessage(message)
-                }
+            withTools(tools) {
+                val message = chatWithTools(Message("古关优是谁？"))
+                println(message.content)
+                addMessage(message)
             }
         }
     }

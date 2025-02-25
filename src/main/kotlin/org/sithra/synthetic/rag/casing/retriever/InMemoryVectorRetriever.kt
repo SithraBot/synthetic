@@ -11,12 +11,32 @@ import org.sithra.synthetic.rag.IDocument
 import org.sithra.synthetic.rag.IReranker
 import org.sithra.synthetic.rag.IRetriever
 
+/**
+ * InMemoryVectorRetriever is a retriever that stores documents in memory.
+ *
+ * @property embedModel The model to use for embedding.
+ * @property embeddedService The service to use for embedding.
+ * @property documents The documents to retrieve.
+ * @property rerankers The rerankers to use.
+ *
+ * @see IRetriever
+ * @see IReranker
+ * @see Document
+ */
 class InMemoryVectorRetriever(
     private val embedModel: String,
     private val embeddedService: IEmbeddedService,
     val documents: MutableMap<Uuid, Document> = mutableMapOf(),
     override val rerankers: List<IReranker<Document>> = listOf()
 ) : IRetriever<InMemoryVectorRetriever.Document> {
+    /**
+     * Document is a document for InMemoryVectorRetriever.
+     *
+     * @property id The unique identifier for the document.
+     * @property document The content of the document.
+     * @property title The title of the document.
+     * @property vector The embedding of the document.
+     */
     @Serializable
     data class Document(
         override val id: Uuid, override val document: String, val title: String, val vector: FloatArray
@@ -42,6 +62,15 @@ class InMemoryVectorRetriever(
         }
     }
 
+    /**
+     * InMemoryVectorRetrieverBuilder is a builder for InMemoryVectorRetriever.
+     *
+     * @property model The model to use for embedding.
+     * @property embeddedService The service to use for embedding.
+     * @property adapter The adapter to use for embedding.
+     * @property documents The documents to retrieve.
+     * @property rerankers The rerankers to use.
+     */
     class InMemoryVectorRetrieverBuilder(
         var model: String? = null,
         var embeddedService: IEmbeddedService? = null,
@@ -49,33 +78,102 @@ class InMemoryVectorRetriever(
         private val documents: MutableMap<Uuid, Document> = mutableMapOf(),
         private val rerankers: MutableList<IReranker<Document>> = mutableListOf()
     ) {
+        /**
+         * Set the model to use for embedding.
+         *
+         * @param embedModel The model to use for embedding.
+         * @return current builder.
+         */
         fun setEmbedModel(embedModel: String) = apply { this.model = embedModel }
 
+        /**
+         * Set the service to use for embedding.
+         *
+         * @param embeddedService The service to use for embedding.
+         * @return current builder.
+         */
         fun setEmbeddedService(embeddedService: IEmbeddedService) = apply { this.embeddedService = embeddedService }
 
+        /**
+         * Set the adapter to use for embedding.
+         *
+         * @param adapter The adapter to use for embedding.
+         * @return current builder,
+         */
         fun setEmbeddedService(adapter: IAdapter) = apply { this.adapter = adapter }
 
+        /**
+         * Add a document to the documents to retrieve.
+         *
+         * @param document The document to add.
+         * @return current builder.
+         */
         fun addReranker(reranker: IReranker<Document>) = apply { rerankers.add(reranker) }
 
+        /**
+         * Add documents to the documents to retrieve.
+         *
+         * @param documents The documents to add.
+         * @return current builder.
+         */
         fun addRerankers(rerankers: List<IReranker<Document>>) = apply { rerankers.forEach { addReranker(it) } }
 
+        /**
+         * Add documents to the documents to retrieve.
+         *
+         * @param documents The documents to add.
+         * @return current builder.
+         */
         fun addRerankers(vararg rerankers: IReranker<Document>) = apply { rerankers.forEach { addReranker(it) } }
 
+        /**
+         * Add a document to the documents to retrieve.
+         *
+         * @param document The document to add.
+         * @return current builder.
+         */
         fun addDocument(document: Document) = apply { documents[document.id] = document }
 
+        /**
+         * Add documents to the documents to retrieve.
+         *
+         * @param documents The documents to add.
+         * @return current builder.
+         */
         fun addDocuments(documents: List<Document>) = apply { documents.forEach { addDocument(it) } }
 
+        /**
+         * Add documents to the documents to retrieve.
+         *
+         * @param documents The documents to add.
+         * @return current builder.
+         */
         fun addDocuments(vararg documents: Document) = apply { documents.forEach { addDocument(it) } }
 
+        /**
+         * Build the InMemoryVectorRetriever.
+         *
+         * @return The InMemoryVectorRetriever.
+         */
         fun build() = InMemoryVectorRetriever(
             model!!,
-            embeddedService ?: adapter?.getEmbeddedService() ?: throw Exception("EmbeddedService not set"),
+            embeddedService ?: adapter?.embeddedService ?: throw Exception("EmbeddedService not set"),
             documents,
             rerankers
         )
     }
 
     companion object {
+        /**
+         * Create a new InMemoryVectorRetriever.
+         *
+         * @param model The model to use for embedding.
+         * @param embeddedService The service to use for embedding.
+         * @param jsonString The JSON string to use for retrieving documents.
+         * @param json The JSON serializer to use for encoding and decoding data.
+         *
+         * @return The InMemoryVectorRetriever.
+         */
         operator fun invoke(model: String, embeddedService: IEmbeddedService, jsonString: String, json: Json = Json) =
             InMemoryVectorRetriever(
                 model,
@@ -83,24 +181,59 @@ class InMemoryVectorRetriever(
                 json.decodeFromString<List<Document>>(jsonString).associateBy { it.id }
                     .toMutableMap())
 
+        /**
+         * Create a new InMemoryVectorRetriever.
+         *
+         * @param model The model to use for embedding.
+         * @param adapter The adapter to use for embedding.
+         * @param jsonString The JSON string to use for retrieving documents.
+         * @param json The JSON serializer to use for encoding and decoding data.
+         *
+         * @return The InMemoryVectorRetriever.
+         */
         operator fun invoke(model: String, adapter: IAdapter, jsonString: String, json: Json = Json) =
-            org.sithra.synthetic.rag.casing.retriever.InMemoryVectorRetriever(
+            InMemoryVectorRetriever(
                 model,
-                adapter.getEmbeddedService(),
+                adapter.embeddedService,
                 jsonString,
                 json
             )
 
+        /**
+         * Create a new InMemoryVectorRetriever.
+         *
+         * @param model The model to use for embedding.
+         * @param embeddedService The service to use for embedding.
+         * @param documents The documents to retrieve.
+         *
+         * @return The InMemoryVectorRetriever.
+         */
         operator fun invoke(model: String, embeddedService: IEmbeddedService, documents: List<Document>) =
             InMemoryVectorRetriever(model, embeddedService, documents.associateBy { it.id }.toMutableMap())
 
+        /**
+         * Create a new InMemoryVectorRetriever.
+         *
+         * @param model The model to use for embedding.
+         * @param adapter The adapter to use for embedding.
+         * @param documents The documents to retrieve.
+         *
+         * @return The InMemoryVectorRetriever.
+         */
         operator fun invoke(model: String, adapter: IAdapter, documents: List<Document>) =
-            org.sithra.synthetic.rag.casing.retriever.InMemoryVectorRetriever(
+            InMemoryVectorRetriever(
                 model,
-                adapter.getEmbeddedService(),
+                adapter.embeddedService,
                 documents
             )
 
+        /**
+         * Create a new InMemoryVectorRetriever.
+         *
+         * @param builder The builder to use for creating the InMemoryVectorRetriever.
+         *
+         * @return The InMemoryVectorRetriever.
+         */
         operator fun invoke(builder: InMemoryVectorRetrieverBuilder.() -> Unit) =
             InMemoryVectorRetrieverBuilder().apply(builder).build()
     }

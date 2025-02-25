@@ -139,7 +139,7 @@ annotation class Minimum(val value: Int)
 annotation class Maximum(val value: Int)
 
 /**
- * Annotate to add a exclusive minimum value constraint in the schema for number.
+ * Annotate to add an exclusive minimum value constraint in the schema for number.
  *
  * @property value The exclusive minimum value of the number.
  */
@@ -150,7 +150,7 @@ annotation class Maximum(val value: Int)
 annotation class ExclusiveMinimum(val value: Int)
 
 /**
- * Annotate to add a exclusive maximum value constraint in the schema for number.
+ * Annotate to add an exclusive maximum value constraint in the schema for number.
  *
  * @property value The exclusive maximum value of the number.
  */
@@ -200,7 +200,7 @@ annotation class MinimumDouble(val value: Double)
 annotation class MaximumDouble(val value: Double)
 
 /**
- * Annotate to add a exclusive minimum value constraint in the schema for number.
+ * Annotate to add an exclusive minimum value constraint in the schema for number.
  *
  * This is for double type.
  *
@@ -213,7 +213,7 @@ annotation class MaximumDouble(val value: Double)
 annotation class ExclusiveMinimumDouble(val value: Double)
 
 /**
- * Annotate to add a exclusive maximum value constraint in the schema for number.
+ * Annotate to add an exclusive maximum value constraint in the schema for number.
  *
  * This is for double type.
  *

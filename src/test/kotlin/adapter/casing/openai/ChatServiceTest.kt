@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 
 internal object ChatServiceTest {
-    private val testChatService = OpenAIAdapterTest.testAIAdapter.getChatService()
+    private val testChatService = OpenAIAdapterTest.testAIAdapter.chatService
 
     @Test
     fun chat() {

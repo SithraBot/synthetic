@@ -18,7 +18,13 @@ import org.sithra.synthetic.store.IMessage
 import org.sithra.synthetic.tools.ITools
 import org.sithra.synthetic.tools.toolcall.IToolCall
 
-@Suppress("unused")
+/**
+ * A chat service that uses the OpenAI API.
+ *
+ * @property client The HTTP client to use for making requests.
+ * @property config The configuration for the OpenAI API.
+ * @property json The JSON serializer to use for encoding and decoding data.
+ */
 class ChatService(
     private val client: HttpClient,
     private val config: OpenAIAdapter.Config,
@@ -26,6 +32,18 @@ class ChatService(
 ) :
     IChatService {
     @Serializable
+
+    /**
+     * Represents a request to chat with the model.
+     *
+     * @property model The ID of the model to use.
+     * @property messages The messages to send to the model. The messages are sent in the order they are specified in the list.
+     * @property temperature The temperature of the model.
+     * A higher value will make the model more "creative" and a lower value will make it more conservative.
+     * @property stream Whether the response should be streamed back.
+     * If this is `true`, the response will be a stream of messages, otherwise it will be a single message.
+     * @property tools The tools to use, if any. This is an optional field.
+     */
     data class Request(
         val model: String,
         val messages: List<CompatibleMessage>,

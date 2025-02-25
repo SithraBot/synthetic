@@ -25,7 +25,7 @@ Optimized for Kotlin/JVM developers prioritizing API interoperability and custom
 
 ```kotlin
 private val apiKey = "sk-xxxxxxxxxx"
-private val url = Url("https://deom.demo.com/v1")
+private val url = Url("https://synthetic.sithra.org/v1")
 fun main() = runBlocking {
     val adapter = OpenAIAdapter {
         baseUrl = url
@@ -63,28 +63,26 @@ fun main() = runBlocking {
 // ... ...
 val retriever = InMemoryVectorRetriever {
     model = "demo-embedding-model"
-    adapter = OpenAIAdapterTest.testAIAdapter
+    embeddedService = adapter.embeddedService
     addReranker(Limiter(1))
     addDocuments(
         // ...
     )
 }
 ctx.withSession(session) {
-    withRAGBase(retriever) {
-        suspend fun ask(question: String): Message =
-            chat(Message(ragTemplate(question, searchDocs(question))))
+    suspend fun ask(question: String): Message =
+        chat(Message(ragTemplate(question, retriever(question))))
 
-        val message1 = ask("why do we use Hello World?")
-        println(message1.content)
-        addMessage(message1)
-        val message2 = ask("古关优是谁？")
-        println(message2.content)
-        addMessage(message2)
-    }
+    val message1 = ask("why do we use Hello World?")
+    println(message1.content)
+    addMessage(message1)
+    val message2 = ask("古关优是谁？")
+    println(message2.content)
+    addMessage(message2)
 }
 
 fun ragTemplate(question: String, docs: List<IDocument>): String {
-    val docsString = docs.joinToString { "${it.document};;" }
+    val docsString = docs.joinToString(";;") { it.document }
     return """
             Please answer the question according to the docs.
             question: $question
@@ -129,21 +127,19 @@ ctx.withSession(session) {
 val tools = OpenAIFunctionTools(Functions())
 val session = testContextManager.createSession("demo-model")
 ctx.withSession(session) {
-    withRAGBase(testRAGBase) {
-        @Serializable
-        class SearchInput(@Description("keywords") val keywords: String)
+    @Serializable
+    class SearchInput(@Description("keywords") val keywords: String)
 
-        tools.functions.register("searchDocuments", "search documents about any by keywords") { input: SearchInput ->
-            runBlocking {
-                search(input.keywords, 1).joinToString(";;") { it.document }
-            }
+    tools.functions.register("searchDocuments", "search documents about any by keywords") { input: SearchInput ->
+        runBlocking {
+            retriever(input.keywords, 1).joinToString(";;") { it.document }
         }
+    }
 
-        withTools(tools) {
-            val message = chatWithTools(Message("古关优是谁？"))
-            println(message.content)
-            addMessage(message)
-        }
+    withTools(tools) {
+        val message = chatWithTools(Message("古关优是谁？"))
+        println(message.content)
+        addMessage(message)
     }
 }
 ```

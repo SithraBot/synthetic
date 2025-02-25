@@ -8,6 +8,13 @@ import io.ktor.http.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.*
 
+/**
+ * An embedding service that uses the OpenAI API.
+ *
+ * @property client The HTTP client to use for making requests.
+ * @property config The configuration for the OpenAI API.
+ * @property json The JSON serializer to use for encoding and decoding data.
+ */
 class EmbeddedService(
     private val client: HttpClient,
     private val config: OpenAIAdapter.Config,

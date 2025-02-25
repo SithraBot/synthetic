@@ -5,6 +5,12 @@ import org.sithra.synthetic.store.Message
 import org.sithra.synthetic.store.ToolMessage
 import org.sithra.synthetic.tools.toolcall.IToolCall
 
+/**
+ * Handles a chat request with tools.
+ *
+ * @param message The message to handle.
+ * @return The response from the chat service.
+ */
 suspend inline fun <reified T : IToolCall> ContextWithSessionAndTools<T>.chatWithTools(message: Message): Message {
     var response = session.chatWithTools(message, tools)
     while (response !is Message) {
@@ -14,6 +20,7 @@ suspend inline fun <reified T : IToolCall> ContextWithSessionAndTools<T>.chatWit
                 val toolCalls = tools.call(response.toolCalls.filterIsInstance<T>())
                 response = session.chatWithTools(toolCalls, tools)
             }
+
             else -> throw Exception("Unexpected message type: $response")
         }
     }

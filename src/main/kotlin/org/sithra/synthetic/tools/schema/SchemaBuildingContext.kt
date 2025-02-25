@@ -142,7 +142,7 @@ data class SchemaBuildingContext
      *
      * Use it if you want to use your own logic to handle the annotation.
      */
-    inline fun <reified T> JsonObjectBuilder.findAnnotationAnd(
+    inline fun <reified T> findAnnotationAnd(
         annotations: Iterable<Annotation>,
         action: (T) -> Unit
     ) = annotations.asSequence()

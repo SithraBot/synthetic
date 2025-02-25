@@ -6,6 +6,13 @@ import org.sithra.synthetic.tools.Functions
 import org.sithra.synthetic.tools.ITools
 import org.sithra.synthetic.tools.casing.toolcall.OpenAIFunctionCall
 
+/**
+ * OpenAIFunctionTools is for processing tool call requests from the OpenAI API.
+ *
+ * @property functions The functions to call.
+ *
+ * @see ITools
+ */
 class OpenAIFunctionTools(val functions: Functions) : ITools<OpenAIFunctionCall> {
     override fun getJsonObject(): JsonElement = buildJsonArray {
         for ((name, function) in functions) {

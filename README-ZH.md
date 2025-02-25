@@ -1,6 +1,7 @@
 <h1 align="center"><img src="https://github.com/SithraBot/synthetic/blob/dev/icon_text.svg" alt="Synthetic" height="64px"/></h1>
 
-**Synthetic** 是一个轻量级 Kotlin/JVM 库，专为构建 LLM 驱动型应用设计，核心支持 RAG（检索增强生成）管道和智能体（Agent）系统。采用适配器优先架构，可无缝集成任意 AI 服务提供商（OpenAI、HuggingFace、自定义端点）和数据存储系统。
+**Synthetic** 是一个轻量级 Kotlin/JVM 库，专为构建 LLM 驱动型应用设计，核心支持
+RAG（检索增强生成）管道和智能体（Agent）系统。采用适配器优先架构，可无缝集成任意 AI 服务提供商（OpenAI、HuggingFace、自定义端点）和数据存储系统。
 
 **核心特性：**
 
@@ -57,28 +58,26 @@ fun main() = runBlocking {
 // ... ...
 val retriever = InMemoryVectorRetriever {
     model = "demo-embedding-model"
-    adapter = OpenAIAdapterTest.testAIAdapter
+    embeddedService = adapter.embeddedService
     addReranker(Limiter(1))
     addDocuments(
         // ...
     )
 }
 ctx.withSession(session) {
-    withRAGBase(retriever) {
-        suspend fun ask(question: String): Message =
-            chat(Message(ragTemplate(question, searchDocs(question))))
+    suspend fun ask(question: String): Message =
+        chat(Message(ragTemplate(question, retriever(question))))
 
-        val message1 = ask("why do we use Hello World?")
-        println(message1.content)
-        addMessage(message1)
-        val message2 = ask("古关优是谁？")
-        println(message2.content)
-        addMessage(message2)
-    }
+    val message1 = ask("why do we use Hello World?")
+    println(message1.content)
+    addMessage(message1)
+    val message2 = ask("古关优是谁？")
+    println(message2.content)
+    addMessage(message2)
 }
 
 fun ragTemplate(question: String, docs: List<IDocument>): String {
-    val docsString = docs.joinToString { "${it.document};;" }
+    val docsString = docs.joinToString(";;") { it.document }
     return """
             Please answer the question according to the docs.
             question: $question
@@ -115,7 +114,7 @@ ctx.withSession(session) {
 }
 ```
 
-### Tools + RAG (组合使用)
+### Tools + RAG (函数调用 + 检索增强生成)
 
 ```kotlin
 // ... ...
@@ -123,21 +122,19 @@ ctx.withSession(session) {
 val tools = OpenAIFunctionTools(Functions())
 val session = testContextManager.createSession("demo-model")
 ctx.withSession(session) {
-    withRAGBase(testRAGBase) {
-        @Serializable
-        class SearchInput(@Description("keywords") val keywords: String)
+    @Serializable
+    class SearchInput(@Description("keywords") val keywords: String)
 
-        tools.functions.register("searchDocuments", "search documents about any by keywords") { input: SearchInput ->
-            runBlocking {
-                search(input.keywords, 1).joinToString(";;") { it.document }
-            }
+    tools.functions.register("searchDocuments", "search documents about any by keywords") { input: SearchInput ->
+        runBlocking {
+            retriever(input.keywords, 1).joinToString(";;") { it.document }
         }
+    }
 
-        withTools(tools) {
-            val message = chatWithTools(Message("古关优是谁？"))
-            println(message.content)
-            addMessage(message)
-        }
+    withTools(tools) {
+        val message = chatWithTools(Message("古关优是谁？"))
+        println(message.content)
+        addMessage(message)
     }
 }
 ```

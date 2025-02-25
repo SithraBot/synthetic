@@ -6,7 +6,7 @@ import kotlin.test.Test
 
 
 internal object EmbeddedServiceTest {
-    val testEmbeddedService = HybridTest.testHybrid.getEmbeddedService()
+    val testEmbeddedService = HybridTest.testHybrid.embeddedService
 
     @Test
     fun embed() {

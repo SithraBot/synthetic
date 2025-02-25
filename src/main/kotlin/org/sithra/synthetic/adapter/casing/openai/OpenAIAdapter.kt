@@ -9,8 +9,60 @@ import kotlinx.serialization.json.Json
 import org.sithra.synthetic.adapter.IChatService
 import org.sithra.synthetic.adapter.IEmbeddedService
 
-@Suppress("unused")
+/**
+ * OpenAIAdapter is an adapter implementation for interfacing with OpenAI's services.
+ *
+ * @property config The configuration settings for the adapter.
+ *
+ * This adapter provides chat and embedding services by implementing the IAdapter interface.
+ * It uses ktor HTTP client for making requests to the specified base URL with the provided token.
+ *
+ * The configuration for the adapter includes various timeout settings to control the request,
+ * connection, and socket timeouts.
+ *
+ * Usage:
+ * ```kotlin
+ * val adapter = OpenAIAdapter {
+ *     baseUrl = Url("https://api.openai.com/v1")
+ *     token = "your-api-key"
+ * }
+ * ```
+ *
+ * @see ChatService
+ * @see EmbeddedService
+ */
 class OpenAIAdapter(private val config: Config) : IAdapter {
+    /**
+     * The Config class encapsulates configuration settings for the OpenAIAdapter.
+     *
+     * @property baseUrl The base URL for making API requests.
+     * @property token The authentication token for accessing OpenAI services.
+     * @property requestTimeout The request timeout duration in milliseconds.
+     * @property connectTimeout The connection timeout duration in milliseconds.
+     * @property socketTimeout The socket timeout duration in milliseconds.
+     *
+     * Usage:
+     *
+     * Config Usage Example:
+     * ```kotlin
+     * val config = OpenAIAdapter.Config(
+     *     baseUrl = Url("https://api.openai.com/v1"),
+     *     token = "your-api-key"
+     * )
+     * ```
+     *
+     * The ConfigBuilder class provides a builder pattern for creating Config instances.
+     *
+     * ConfigBuilder Usage Example:
+     * ```kotlin
+     * val config = OpenAIAdapter.Config.builder()
+     *     .setBaseUrl(Url("https://api.openai.com/v1"))
+     *     .setToken("your-api-key")
+     *     .build()
+     * ```
+     *
+     * The ConfigBuilder allows for setting the base URL, token, and various timeout settings.
+     */
     data class Config(
         val baseUrl: Url,
         val token: String,
@@ -23,6 +75,15 @@ class OpenAIAdapter(private val config: Config) : IAdapter {
         }
     }
 
+    /**
+     * Construct an instance of OpenAIAdapter using the given configuration settings.
+     *
+     * @param baseUrl The base URL for making API requests.
+     * @param token The authentication token for accessing OpenAI services.
+     * @param requestTimeout The request timeout duration in milliseconds.
+     * @param connectTimeout The connection timeout duration in milliseconds.
+     * @param socketTimeout The socket timeout duration in milliseconds.
+     */
     class ConfigBuilder(
         var baseUrl: Url? = null,
         var token: String? = null,
@@ -140,17 +201,29 @@ class OpenAIAdapter(private val config: Config) : IAdapter {
 
     companion object {
         /**
-         * A convenience function to create an OpenAIAdapter instance.
+         * OpenAIAdapter is an adapter implementation for interfacing with OpenAI's services.
          *
-         * This function takes a lambda expression with a receiver of ConfigBuilder.
-         * Inside the lambda expression, you can set the base URL, token,
-         * request timeout, connect timeout, and socket timeout.
-         * The function then calls the build() method of the ConfigBuilder
-         * and returns an OpenAIAdapter instance initialized with the built Config.
+         * This adapter provides chat and embedding services by implementing the IAdapter interface.
+         * It uses ktor HTTP client for making requests to the specified base URL with the provided token.
          *
-         * @param builder A lambda expression with a receiver of ConfigBuilder.
-         * @return An OpenAIAdapter instance initialized with the built Config.
-         * @throws NullPointerException If any of the required parameters are not set.
+         * The configuration for the adapter includes various timeout settings to control the request,
+         * connection, and socket timeouts.
+         *
+         * Usage:
+         * ```kotlin
+         * val adapter = OpenAIAdapter {
+         *     baseUrl = Url("https://api.openai.com/v1")
+         *     token = "your-api-key"
+         *     requestTimeout = 10000L
+         *     connectTimeout = 5000L
+         *     socketTimeout = 5000L
+         * }
+         * ```
+         *
+         * @param builder A lambda expression which configures the OpenAIAdapter.
+         *
+         * @see ChatService
+         * @see EmbeddedService
          */
         operator fun invoke(builder: ConfigBuilder.() -> Unit): OpenAIAdapter {
             val config = Config.builder().apply(builder).build()
@@ -170,24 +243,6 @@ class OpenAIAdapter(private val config: Config) : IAdapter {
             socketTimeoutMillis = config.socketTimeout
         }
     }
-    private val chatService by lazy { ChatService(client, config, json) }
-    private val embeddedService by lazy { EmbeddedService(client, config, json) }
-
-    /**
-     * Returns the chat service object.
-     *
-     * @return The chat service object associated with this adapter.
-     */
-    override fun getChatService(): IChatService {
-        return chatService
-    }
-
-    /**
-     * Returns the embedded service object.
-     *
-     * @return The embedded service object associated with this adapter.
-     */
-    override fun getEmbeddedService(): IEmbeddedService {
-        return embeddedService
-    }
+    override val chatService by lazy { ChatService(client, config, json) }
+    override val embeddedService by lazy { EmbeddedService(client, config, json) }
 }

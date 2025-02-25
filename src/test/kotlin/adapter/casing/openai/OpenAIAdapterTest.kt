@@ -16,16 +16,4 @@ internal object OpenAIAdapterTest {
         connectTimeout = timeout
         socketTimeout = timeout
     }
-
-    @Test
-    fun getChatService() {
-        val chatService = testAIAdapter.getChatService()
-        assert(chatService is ChatService)
-    }
-
-    @Test
-    fun getEmbeddedService() {
-        val embeddedService = testAIAdapter.getEmbeddedService()
-        assert(embeddedService is EmbeddedService)
-    }
 }

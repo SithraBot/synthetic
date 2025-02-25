@@ -7,20 +7,37 @@ import kotlinx.serialization.Serializable
 import org.sithra.synthetic.tools.ITools
 import org.sithra.synthetic.tools.toolcall.IToolCall
 
+/**
+ *  IChatService is an interface representing a service that can be used to handle chat requests.
+ */
 interface IChatService {
     @Serializable
+    /**
+     *  ChatRequest is a data class representing a request to the chat service.
+     *
+     *  @property messages The list of messages to be sent to the chat service.
+     *  @property model The model name to be used for the chat service.
+     *  @property temperature The temperature to be used for the chat service.
+     */
     data class ChatRequest(
         val messages: List<IMessage>,
         val model: String?,
         val temperature: Double = 0.7,
     )
 
+    /**
+     *  Builder for building a ChatRequest object.
+     *
+     *  @constructor Creates a new ChatRequestBuilder object with the given initial values.
+     *  @property messages The list of messages to be sent to the chat service.
+     *  @property model The model name to be used for the chat service.
+     *  @property temperature The temperature to be used for the chat service.
+     */
     class ChatRequestBuilder(
         var messages: List<IMessage>,
         var model: String?,
         var temperature: Double = 0.7
     ) {
-
         /**
          * Sets the list of messages for the chat request.
          *
@@ -108,25 +125,66 @@ interface IChatService {
         }
     }
 
+    /**
+     * Handles a chat request.
+     *
+     * @param body The chat request to be handled.
+     * @return The response from the chat service.
+     */
     suspend fun chat(body: ChatRequest): Message
 
+    /**
+     * Handles a chat request with tools.
+     *
+     * @param body The chat request to be handled.
+     * @param tools The tools to be used for the chat request.
+     * @return The response from the chat service.
+     */
     suspend fun <T : IToolCall> chatWithTools(body: ChatRequest, tools: ITools<T>): IMessage
 
+    /**
+     * Convenience function for handling a chat request using a builder.
+     *
+     * @param bodyBuilder The lambda expression which configures the ChatRequestBuilder.
+     * @return The response from the chat service.
+     */
     suspend fun chat(bodyBuilder: ChatRequestBuilder.() -> Unit): Message {
         val builder = ChatRequestBuilder(emptyList(), null)
         builder.bodyBuilder()
         return chat(builder.build())
     }
 
+    /**
+     * Convenience function for handling a chat request with tools using a builder.
+     *
+     * @param tools The tools to be used for the chat request.
+     * @param bodyBuilder The lambda expression which configures the ChatRequestBuilder.
+     * @return The response from the chat service.
+     */
     suspend fun <T : IToolCall> chatWithTools(tools: ITools<T>, bodyBuilder: ChatRequestBuilder.() -> Unit): IMessage {
         val builder = ChatRequestBuilder(emptyList(), null)
         builder.bodyBuilder()
         return chatWithTools(builder.build(), tools)
     }
 
-
+    /**
+     * Convenience function for handling a chat request in a streaming fashion.
+     *
+     * The response from the chat service is returned as a Flow of strings.
+     *
+     * @param body The chat request to be handled.
+     * @return The response from the chat service as a Flow of strings.
+     */
     fun chatStream(body: ChatRequest): Flow<String>
 
+    /**
+     * Convenience function for handling a chat request in a streaming fashion using a builder.
+     *
+     * The response from the chat service is returned as a Flow of strings.
+     *
+     * @param bodyBuilder The lambda expression which configures the ChatRequestBuilder.
+     * @return The response from the chat service as a Flow of strings.
+     */
     fun chatStream(
         bodyBuilder: ChatRequestBuilder.() -> Unit,
     ): Flow<String> {
