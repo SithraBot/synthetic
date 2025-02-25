@@ -11,15 +11,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    create("examples") {
-        kotlin.srcDir("src/examples/kotlin")
-        resources.srcDir("src/examples/resources")
-        compileClasspath += main.get().output
-        runtimeClasspath += main.get().output
-    }
-}
-
 dependencies {
     implementation(kotlin("reflect"))
 
@@ -29,8 +20,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     testImplementation(kotlin("test"))
-
-    "examplesImplementation"("io.ktor:ktor-client-core:$ktor_version")
 }
 
 tasks.test {
