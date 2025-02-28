@@ -1,22 +1,15 @@
-import java.util.*
+import java.util.Properties
 
 object Props {
-    private val secret = run {
-        val props = Properties()
-        props.load(Props::class.java.getResourceAsStream("secrets.properties"))
-        props
+    private val secrets: Properties by lazy {
+        val props = this::class.java.getResourceAsStream("/secrets.properties")
+        Properties().apply { load(props) }
     }
 
-    val documents = run {
-        val docs = Props::class.java.getResourceAsStream("docs.json")
-        docs!!.bufferedReader().use { it.readText() }
-    }
-
-    fun getDeepSeekKey(): String {
-        return secret.getProperty("deepseek_key")
-    }
-
-    fun getAliyunKey(): String {
-        return secret.getProperty("aliyun_key")
+    object OpenAI {
+        val apiKey = secrets.getProperty("openai.api-key")
+        val baseUrl = secrets.getProperty("openai.base-url")
+        val model = secrets.getProperty("openai.model")
+        val embeddingModel = secrets.getProperty("openai.embedding-model")
     }
 }

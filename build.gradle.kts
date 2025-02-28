@@ -1,33 +1,48 @@
-plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
-}
-
-group = "org.sithra.synthetic"
-version = "0.1.0"
 val ktor_version: String by project
 
-repositories {
-    mavenCentral()
+plugins {
+    kotlin("jvm") version "2.1.10"
+    kotlin("plugin.serialization") version "1.8.0"
 }
 
-dependencies {
-    implementation(kotlin("reflect"))
-
-    implementation("io.ktor:ktor-client-core:$ktor_version")
-    implementation("io.ktor:ktor-client-cio:$ktor_version")
-    implementation("io.ktor:ktor-client-cio-jvm:3.0.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-
-    testImplementation(kotlin("test"))
+allprojects {
+    group = "org.sithra.synthetic"
+    version = "0.1.0"
+    repositories {
+        mavenCentral()
+    }
 }
 
-tasks.test {
-    useJUnitPlatform()
+subprojects {
+    apply {
+        plugin("org.jetbrains.kotlin.jvm")
+        plugin("org.jetbrains.kotlin.plugin.serialization")
+    }
+    dependencies {
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    }
+    kotlin {
+        jvmToolchain(21)
+        compilerOptions {
+            optIn.add("kotlin.uuid.ExperimentalUuidApi")
+        }
+    }
 }
+
 kotlin {
     jvmToolchain(21)
     compilerOptions {
         optIn.add("kotlin.uuid.ExperimentalUuidApi")
     }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    subprojects.forEach { testImplementation(it) }
+    testImplementation("io.ktor:ktor-client-cio-jvm:$ktor_version")
+    testImplementation(kotlin("test"))
 }
