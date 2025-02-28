@@ -103,25 +103,25 @@ class InMemoryVectorRetriever(
         fun setEmbeddedService(adapter: IAdapter) = apply { this.adapter = adapter }
 
         /**
-         * Add a document to the documents to retrieve.
+         * Add a reranker to the rerankers to use.
          *
-         * @param document The document to add.
+         * @param reranker The reranker to add.
          * @return current builder.
          */
         fun addReranker(reranker: IReranker<Document>) = apply { rerankers.add(reranker) }
 
         /**
-         * Add documents to the documents to retrieve.
+         * Add rerankers to the rerankers to use.
          *
-         * @param documents The documents to add.
+         * @param rerankers The rerankers to add.
          * @return current builder.
          */
         fun addRerankers(rerankers: List<IReranker<Document>>) = apply { rerankers.forEach { addReranker(it) } }
 
         /**
-         * Add documents to the documents to retrieve.
+         * Add rerankers to the rerankers to use.
          *
-         * @param documents The documents to add.
+         * @param rerankers The rerankers to add.
          * @return current builder.
          */
         fun addRerankers(vararg rerankers: IReranker<Document>) = apply { rerankers.forEach { addReranker(it) } }
