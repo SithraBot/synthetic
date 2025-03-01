@@ -1,4 +1,5 @@
 val ktor_version: String by project
+val project_version: String by project
 
 plugins {
     kotlin("jvm") version "2.1.10"
@@ -7,7 +8,7 @@ plugins {
 
 allprojects {
     group = "org.sithra.synthetic"
-    version = "0.1.0"
+    version = project_version
     repositories {
         mavenCentral()
     }
@@ -20,7 +21,7 @@ subprojects {
     }
     dependencies {
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
     }
     kotlin {
         jvmToolchain(21)
